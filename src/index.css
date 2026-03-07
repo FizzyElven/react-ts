@@ -4,3 +4,6 @@ root {
   margin: 0;
   padding: 0;
 }
+::backdrop {
+  backdrop-filter: blur(1px);
+}

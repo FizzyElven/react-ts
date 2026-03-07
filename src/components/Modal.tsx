@@ -1,0 +1,30 @@
+import {type ReactNode, type ReactEventHandler, useEffect, useRef} from "react";
+
+interface ModalProps {
+    isOpen: boolean;
+    onClose: ReactEventHandler,
+    children: ReactNode,
+}
+
+const Modal = ({isOpen, onClose, children}: ModalProps) => {
+    const dialogRef = useRef<HTMLDialogElement>(null);
+
+    useEffect(() => {
+        const dialog = dialogRef.current;
+        if (dialog) {
+            if (isOpen) {
+                dialog.showModal(); // Opens as a modal (blocks page interaction)
+            } else {
+                dialog.close();
+            }
+        }
+
+    }, [isOpen]);
+
+    return (
+            <dialog ref={dialogRef} onClose={onClose} className="m-auto rounded-lg shadow-2xl">
+                {children}
+            </dialog>
+    );
+};
+export default Modal
