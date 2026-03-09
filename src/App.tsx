@@ -9,6 +9,10 @@ import {firebaseApp} from "./services/firebase.ts";
 import {FireContext} from "./Context.tsx";
 import {useAuth} from "./hooks/Hooks.tsx";
 import Loader from "./components/Loader.tsx";
+import {useState} from "react";
+import Modal from "./components/Modal.tsx";
+import {ConfirmationDialog} from "./components/ConfirmationDialog.tsx";
+import type {ConfirmDialog} from "./types/types.ts";
 
 function App() {
     const navigate = useNavigate();
@@ -16,6 +20,7 @@ function App() {
     const auth = getAuth(firebaseApp);
     console.log(auth)
     const firestore = firebase.firestore
+    const [confirmAction, setConfirmAction] = useState<ConfirmDialog | null>(null);
     const login = async () => {
         const provider = new GoogleAuthProvider();
         const {user} = await signInWithPopup(auth, provider)
@@ -45,14 +50,22 @@ function App() {
                     logout,
                 }
             }>
-                <Navbar/>
+                <Navbar setConfirmDialog={setConfirmAction}/>
                 <Routes>
                     <Route element={<ProtectedRoutes/>}>
-                        <Route path="/tasks" element={<Tasks/>}/>
-                        <Route path="/*" element={<Navigate to="/tasks" replace />}/>
+                        <Route path="/tasks" element={<Tasks setConfirmDialog={setConfirmAction}/>}/>
+                        <Route path="/*" element={<Navigate to="/tasks" replace/>}/>
                     </Route>
                     <Route path="/login" element={<Login/>}/>
                 </Routes>
+                <Modal isOpen={confirmAction !== null} onClose={() => setConfirmAction(null)}>
+                    {confirmAction && <ConfirmationDialog title={confirmAction.title} text={confirmAction.text}
+                                                          btnVariant={confirmAction.btnVariant}
+                                                          confirmText={confirmAction.confirmText}
+                                                          onConfirm={confirmAction.onConfirm}
+                                                          onCancel={() => setConfirmAction(null)}/>
+                    }
+                </Modal>
             </FireContext.Provider>
         </>
     )
