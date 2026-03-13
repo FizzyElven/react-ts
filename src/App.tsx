@@ -39,7 +39,7 @@ function App() {
     }
     if (loading) return <Loader/>
     return (
-        <>
+        <div className="flex flex-col">
             <FireContext.Provider value={
                 {
                     firestore,
@@ -67,7 +67,7 @@ function App() {
                     }
                 </Modal>
             </FireContext.Provider>
-        </>
+        </div>
     )
 }
 

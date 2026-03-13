@@ -14,10 +14,11 @@ const Task = ({task, user, onDelete, onEdit}: Props) => {
     return (
         <div className="border-2 text-2xl border-blue-600 font-bold p-2.5 rounded-md">
             <p>ID: {task.id}</p>
-            <p>Tittle: {task.tittle}</p>
+            <p>Title: {task.title}</p>
             <p>Description: {task.description}</p>
             <p>Status: {task.status}</p>
             <p>Priority: {task.priority}</p>
+            <p>Created at: {task.createdAt ? new Date(task.createdAt).toLocaleString() : "-"}</p>
             <div className="flex justify-between items-center">
                 <button onClick={()=>onEdit(task)}
                     className="text-white text-2xl bg-blue-600 font-bold p-2.5 rounded-md cursor-pointer w-max">Edit

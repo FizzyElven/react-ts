@@ -30,13 +30,11 @@ export async function addTaskToUser(userId: string, taskData: TaskData) {
 
 export async function getUserTasks(userId: string) {
     try {
-        //const querySnapshot = await getDocs(collection(db, "users"));
         const querySnapshot = await getDocs(collection(db, "users", userId, "tasks"));
         if (querySnapshot.empty) return
-        console.log(querySnapshot.docs);
         return querySnapshot.docs.map(doc => ({
             id: doc.id,
-            ...doc.data()
+            ...doc.data(),
         } as TaskData))
     } catch (e) {
         console.log(e);

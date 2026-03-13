@@ -12,7 +12,7 @@ interface TaskEditorProps {
 
 function TaskEditor({onCancel, onCreate, onEdit, initialTask, user}: TaskEditorProps) {
     const [editedTask, setEditedTask] = useState<TaskData>({
-        tittle: "",
+        title: "",
         description: "",
         priority: "low",
         status: "idle",
@@ -45,10 +45,10 @@ function TaskEditor({onCancel, onCreate, onEdit, initialTask, user}: TaskEditorP
         <div className="flex flex-col gap-2.5 justify-center items-center p-5 text-2xl font-bold w-max">
             <h2>{initialTask ? "Edit Task" : "Create New Task"}</h2>
             <form className="flex flex-col gap-5 mb-5" onSubmit={(event) => event.preventDefault()}>
-                <label htmlFor="tittle">Tittle:</label>
-                <input id="tittle" defaultValue={editedTask?.tittle}
+                <label htmlFor="title">Title:</label>
+                <input id="title" defaultValue={editedTask?.title}
                        className="border-2 border-blue-600 rounded-md px-2"
-                       onBlur={(event) => updateField("tittle", event.target.value)}/>
+                       onBlur={(event) => updateField("title", event.target.value)}/>
                 <label htmlFor="description">Description:</label>
                 <input id="description" defaultValue={editedTask?.description}
                        className="border-2 border-blue-600 rounded-md px-2"
@@ -57,15 +57,15 @@ function TaskEditor({onCancel, onCreate, onEdit, initialTask, user}: TaskEditorP
                     <p>Status:</p>
                     <div className="flex gap-3">
                         <input id="idle" value="idle" name="status" type="radio"
-                               defaultChecked={editedTask?.status === "idle"}
+                               checked={editedTask?.status === "idle"}
                                onChange={(event) => updateField("status", event.target.value)}/>
                         <label htmlFor="idle">idle</label>
                         <input id="inprogress" value="in progress" name="status" type="radio"
-                               defaultChecked={editedTask?.status === "in progress"}
+                               checked={editedTask?.status === "in progress"}
                                onChange={(event) => updateField("status", event.target.value)}/>
                         <label htmlFor="inprogress">in progress</label>
                         <input id="completed" value="completed" name="status" type="radio"
-                               defaultChecked={editedTask?.status === "completed"}
+                               checked={editedTask?.status === "completed"}
                                onChange={(event) => updateField("status", event.target.value)}/>
                         <label htmlFor="completed">completed</label>
                     </div>
@@ -74,15 +74,15 @@ function TaskEditor({onCancel, onCreate, onEdit, initialTask, user}: TaskEditorP
                     <p>Priority:</p>
                     <div className="flex gap-3">
                         <input id="low" value="low" name="priority" type="radio"
-                               defaultChecked={editedTask?.priority === "low"}
+                               checked={editedTask?.priority === "low"}
                                onChange={(event) => updateField("priority", event.target.value)}/>
                         <label htmlFor="low">low</label>
                         <input id="medium" value="medium" name="priority" type="radio"
-                               defaultChecked={editedTask?.priority === "medium"}
+                               checked={editedTask?.priority === "medium"}
                                onChange={(event) => updateField("priority", event.target.value)}/>
                         <label htmlFor="medium">medium</label>
                         <input id="high" value="high" name="priority" type="radio"
-                               defaultChecked={editedTask?.priority === "high"}
+                               checked={editedTask?.priority === "high"}
                                onChange={(event) => updateField("priority", event.target.value)}/>
                         <label htmlFor="high">high</label>
                     </div>

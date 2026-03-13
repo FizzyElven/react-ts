@@ -1,18 +1,68 @@
-import {useContext, useState} from "react";
+import {type ChangeEvent, useContext, useMemo, useState} from "react";
 import {FireContext} from "../Context.tsx";
 import {addTaskToUser, deleteUserTask, getUserTasks, updateUserTask} from "../services/firebase.ts";
-import type {ConfirmDialog, TaskData} from "../types/types.ts";
+import type {ConfirmDialog, SortArrayConfig, TaskData} from "../types/types.ts";
 import Task from "./Task.tsx";
 import type {User} from "firebase/auth";
 import Modal from "./Modal.tsx";
 import TaskEditor from "./TaskEditor.tsx";
+import {filterArray} from "../utils/filter.ts";
+import {sortArray} from "../utils/sort.ts";
 
-function Tasks({setConfirmDialog} : {setConfirmDialog :(actions: ConfirmDialog | null) => void}) {
+function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog | null) => void }) {
     const {user} = useContext(FireContext)
     const [isEditorOpen, setIsEditorOpen] = useState(false);
     const [editTask, setEditTask] = useState<TaskData | undefined>(undefined);
     const [tasks, setTasks] = useState<TaskData[] | null>(null);
-    console.log(`Tasks render ${user?.uid}`)
+    const [filters, setFilters] = useState<Partial<TaskData>>({});
+    const [sortConfig, setSortConfig] = useState<SortArrayConfig<TaskData>>({
+        key: "id",
+        direction: "asc",
+        sortMethod: "alphabetical"
+    });
+    const processedTasks = useMemo(() => {
+        if (tasks) {
+            const filteredTasks = filterArray(tasks, filters)
+            return sortArray(filteredTasks, sortConfig)
+        }
+        return 0
+    }, [tasks, filters, sortConfig]);
+    const handleSorting = (event: ChangeEvent<HTMLSelectElement>) => {
+        const logicalOrder = () => {
+            switch (event.target.value) {
+                case "priority":
+                    return ["low", "medium", "high"]
+                case "status":
+                    return ["idle", "in progress", "completed"]
+            }
+        }
+        const sortingMethod = () => {
+            switch (event.target.value) {
+                case "priority":
+                case "status":
+                    return "logical"
+                case "createdAt":
+                    return "numerical"
+                default:
+                    return "alphabetical"
+            }
+        }
+        setSortConfig({
+            key: event.target.value as keyof TaskData,
+            direction: "asc",
+            sortMethod: sortingMethod(),
+            logicOrder: logicalOrder()
+        })
+    }
+
+    function updateFilters(field: keyof TaskData, value: any) {
+        setFilters(filters => ({
+            ...filters,
+            [field]: value
+        }))
+        console.log(filters)
+    }
+
     const handleCreate = () => {
         setEditTask(undefined)
         setIsEditorOpen(true);
@@ -31,23 +81,12 @@ function Tasks({setConfirmDialog} : {setConfirmDialog :(actions: ConfirmDialog |
                 onConfirm: () => {
                     deleteHandler(user, task);
                     setConfirmDialog(null);
-                    },
-                onCancel: () => {setConfirmDialog(null)}
+                },
+                onCancel: () => {
+                    setConfirmDialog(null)
+                }
             }
         )
-    }
-
-    async function addHandler(user: User | null, task: TaskData) {
-        if (user && user.uid) {
-            await addTaskToUser(user?.uid, task)
-            const tasks = await getUserTasks(user?.uid)
-            if (tasks && tasks.length > 0) {
-                setTasks(tasks)
-            }
-            setIsEditorOpen(false)
-        }
-        setIsEditorOpen(false)
-        return
     }
 
     async function getHandler() {
@@ -55,22 +94,27 @@ function Tasks({setConfirmDialog} : {setConfirmDialog :(actions: ConfirmDialog |
             const tasks = await getUserTasks(user?.uid)
             if (tasks && tasks.length > 0) {
                 setTasks(tasks)
+            } else {
+                setTasks(null)
             }
         }
         return
     }
 
-    async function deleteHandler(user: User | null, task: TaskData) {
+    async function addHandler(user: User | null, task: TaskData) {
+        if (user && user.uid) {
+            await addTaskToUser(user?.uid, {...task, createdAt: Date.now()})
+            await getHandler()
+            setIsEditorOpen(false)
+        }
+        setIsEditorOpen(false)
+        return
+    }
 
+    async function deleteHandler(user: User | null, task: TaskData) {
         if (user && user.uid) {
             await deleteUserTask(user.uid, task.id!)
-            const tasks = await getUserTasks(user.uid)
-            console.log(tasks)
-            if (tasks) {
-                setTasks(tasks)
-            } else {
-                setTasks(null)
-            }
+            await getHandler()
         }
         return
     }
@@ -78,14 +122,7 @@ function Tasks({setConfirmDialog} : {setConfirmDialog :(actions: ConfirmDialog |
     async function updateHandler(user: User | null, task: TaskData, updatedTask: TaskData) {
         if (user && user.uid) {
             await updateUserTask(user.uid, task.id!, updatedTask)
-            console.log(task)
-            const tasks = await getUserTasks(user.uid)
-            console.log(tasks)
-            if (tasks) {
-                setTasks(tasks)
-            } else {
-                setTasks(null)
-            }
+            await getHandler()
         }
         setIsEditorOpen(false)
         return
@@ -103,15 +140,42 @@ function Tasks({setConfirmDialog} : {setConfirmDialog :(actions: ConfirmDialog |
                     TEST get tasks
                 </button>
             </div>
-            {tasks && tasks.length > 0 && <div>
-                {tasks.map((task) => (
+            <div className="flex justify-between items-center ">
+                <button className="border-2 text-2xl border-blue-600 font-bold p-2.5 rounded-md cursor-pointer"
+                        onClick={() => updateFilters("priority", "high")}>
+                    Filter test priority
+                </button>
+                <button className="border-2 text-2xl border-blue-600 font-bold p-2.5 rounded-md cursor-pointer"
+                        onClick={() => updateFilters("status", "completed")}>
+                    Filter test status
+                </button>
+                <button className="border-2 text-2xl border-blue-600 font-bold p-2.5 rounded-md cursor-pointer"
+                        onClick={() => setFilters({})}>
+                    Clear filters
+                </button>
+                <select name="sort" value={sortConfig.key}
+                        onChange={handleSorting}>
+                    <option value="id">ID</option>
+                    <option value="title">Title</option>
+                    <option value="status">Status</option>
+                    <option value="priority">Priority</option>
+                    <option value="createdAt">Creation time</option>
+                </select>
+                <button onClick={() => setSortConfig(prevState => {
+                    return {...prevState,
+                    direction: prevState.direction === "asc" ? "desc" : "asc",
+                    }
+                })}>switch sort direction</button>
+            </div>
+            {processedTasks && processedTasks.length > 0 ? <div>
+                {processedTasks.map((task) => (
                     <Task user={user} task={task} onDelete={confirmDelete} onEdit={handleEdit} key={task.id}/>
                 ))}
-            </div>}
-            <Modal isOpen={isEditorOpen} onClose={() => setIsEditorOpen(false)}>
-                <TaskEditor user={user} onCreate={addHandler} onEdit={updateHandler}
-                            onCancel={() => setIsEditorOpen(false)} initialTask={editTask}/>
-            </Modal>
+            </div> : <div className="mt-36 flex flex-col items-center text-2xl">You currently have no tasks</div>}
+            {isEditorOpen && <Modal isOpen={isEditorOpen} onClose={() => setIsEditorOpen(false)}>
+              <TaskEditor user={user} onCreate={addHandler} onEdit={updateHandler}
+                          onCancel={() => setIsEditorOpen(false)} initialTask={editTask}/>
+            </Modal>}
         </div>
     );
 }
