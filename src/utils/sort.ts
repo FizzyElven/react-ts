@@ -1,6 +1,6 @@
 import type {SortArrayConfig} from "../types/types.ts";
 
-export function sortArray <T>(array: T[], sortOptions: SortArrayConfig<T>) {
+export function sortArray<T>(array: T[], sortOptions: SortArrayConfig<T>) {
     if (array && array.length > 0) {
         return [...array].sort((a, b) => {
             const isAsc = sortOptions.direction === 'asc';
@@ -31,9 +31,49 @@ export function sortArray <T>(array: T[], sortOptions: SortArrayConfig<T>) {
     }
     return array
 }
-export function createLogicOrder(order: string[]) : Record<string, number> {
-    return order.reduce((acc, value, index)=> {
+
+export function createLogicOrder(order: string[]): Record<string, number> {
+    return order.reduce((acc, value, index) => {
         acc[value] = index;
         return acc
     }, {} as Record<string, number>)
+}
+
+export function moveItem(arr: any[] | null, currentIndex: number, moveTo: "up" | "down", direction: "asc" | "desc") {
+    if (!arr) return
+    const newArr = [...arr]
+    let targetIndex: number;
+    switch (direction) {
+        case "asc":
+            targetIndex = moveTo === 'up' ? currentIndex - 1 : currentIndex + 1
+
+            if (targetIndex < 0 || targetIndex >= newArr.length) return;
+            console.log("move asc")
+            if (moveTo === 'up') {
+                // To move UP: Midpoint between target's previous and target
+                const prevNeighbor = newArr[targetIndex - 1]?.customOrder ?? 0;
+                const nextNeighbor = newArr[targetIndex].customOrder;
+                return (prevNeighbor + nextNeighbor) / 2;
+            } else {
+                // To move DOWN: Midpoint between target and target's next
+                const prevNeighbor = newArr[targetIndex].customOrder;
+                const nextNeighbor = newArr[targetIndex + 1]?.customOrder ?? prevNeighbor + 100;
+                return (prevNeighbor + nextNeighbor) / 2;
+            }
+        case "desc":
+            targetIndex = moveTo === 'up' ? currentIndex - 1 : currentIndex + 1
+            if (targetIndex < 0 || targetIndex >= newArr.length) return;
+            console.log("move desc")
+            if (moveTo === 'up') {
+                // To move UP: Midpoint between target's previous and target
+                const prevNeighbor = newArr[targetIndex].customOrder;
+                const nextNeighbor = newArr[targetIndex - 1]?.customOrder ?? prevNeighbor + 100;
+                return (prevNeighbor + nextNeighbor) / 2;
+            } else {
+                // To move DOWN: Midpoint between target and target's next
+                const prevNeighbor = newArr[targetIndex + 1]?.customOrder ?? 0;
+                const nextNeighbor = newArr[targetIndex].customOrder;
+                return (prevNeighbor + nextNeighbor) / 2;
+            }
+    }
 }

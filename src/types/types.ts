@@ -5,6 +5,7 @@ export interface TaskData {
     description: string;
     priority: "low" | "medium" | "high";
     status: "idle" | "in progress" | "completed";
+    customOrder?: number;
 }
 
 export interface ConfirmDialog {

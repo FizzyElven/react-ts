@@ -7,7 +7,7 @@ import type {User} from "firebase/auth";
 import Modal from "./Modal.tsx";
 import TaskEditor from "./TaskEditor.tsx";
 import {filterArray} from "../utils/filter.ts";
-import {sortArray} from "../utils/sort.ts";
+import {moveItem, sortArray} from "../utils/sort.ts";
 
 function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog | null) => void }) {
     const {user} = useContext(FireContext)
@@ -25,7 +25,7 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
             const filteredTasks = filterArray(tasks, filters)
             return sortArray(filteredTasks, sortConfig)
         }
-        return 0
+        return null
     }, [tasks, filters, sortConfig]);
     const handleSorting = (event: ChangeEvent<HTMLSelectElement>) => {
         const logicalOrder = () => {
@@ -42,6 +42,7 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
                 case "status":
                     return "logical"
                 case "createdAt":
+                case "customOrder":
                     return "numerical"
                 default:
                     return "alphabetical"
@@ -71,7 +72,7 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
         setEditTask(task);
         setIsEditorOpen(true);
     }
-    const confirmDelete = (user: User | null, task: TaskData) => {
+    const confirmDelete = (task: TaskData) => {
         setConfirmDialog(
             {
                 title: "Delete Task",
@@ -100,10 +101,13 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
         }
         return
     }
-
+    function getNextOrder(tasks: TaskData[] | null): number {
+        if (!tasks || tasks.length === 0) return 100;
+        return Math.max(...tasks.map(t => t.customOrder!)) + 100
+    }
     async function addHandler(user: User | null, task: TaskData) {
         if (user && user.uid) {
-            await addTaskToUser(user?.uid, {...task, createdAt: Date.now()})
+            await addTaskToUser(user?.uid, {...task, createdAt: Date.now(), customOrder: getNextOrder(tasks)})
             await getHandler()
             setIsEditorOpen(false)
         }
@@ -127,7 +131,13 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
         setIsEditorOpen(false)
         return
     }
-
+    async function moveTaskHandler(task: TaskData, index: number, moveTo: "up" | "down") {
+        setSortConfig({...sortConfig, key: "customOrder", sortMethod: "numerical"})
+        const newOrder = moveItem(processedTasks, index, moveTo, sortConfig.direction)
+        if (!newOrder) return
+        console.log(newOrder)
+        await updateHandler(user, task, {...task, customOrder: newOrder})
+    }
     return (
         <div className="container mx-auto mt-5 flex flex-col items-center gap-5">
             <div className="flex justify-between items-center w-2xl">
@@ -160,16 +170,19 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
                     <option value="status">Status</option>
                     <option value="priority">Priority</option>
                     <option value="createdAt">Creation time</option>
+                    <option value="customOrder">Custom order</option>
                 </select>
                 <button onClick={() => setSortConfig(prevState => {
-                    return {...prevState,
-                    direction: prevState.direction === "asc" ? "desc" : "asc",
+                    return {
+                        ...prevState,
+                        direction: prevState.direction === "asc" ? "desc" : "asc",
                     }
-                })}>switch sort direction</button>
+                })}>switch sort direction
+                </button>
             </div>
             {processedTasks && processedTasks.length > 0 ? <div>
                 {processedTasks.map((task) => (
-                    <Task user={user} task={task} onDelete={confirmDelete} onEdit={handleEdit} key={task.id}/>
+                    <Task canManuallySort={sortConfig.key === "customOrder"} task={task} tasks={processedTasks} onDelete={confirmDelete} onEdit={handleEdit} key={task.id} onMove={moveTaskHandler}/>
                 ))}
             </div> : <div className="mt-36 flex flex-col items-center text-2xl">You currently have no tasks</div>}
             {isEditorOpen && <Modal isOpen={isEditorOpen} onClose={() => setIsEditorOpen(false)}>
