@@ -1,10 +1,11 @@
 export interface TaskData {
     id?: string;
     createdAt?: number;
+    dueDate?: number;
     title: string;
     description: string;
     priority: "low" | "medium" | "high";
-    status: "idle" | "in progress" | "completed";
+    status: "idle" | "in progress" | "completed" | "overdue";
     customOrder?: number;
 }
 

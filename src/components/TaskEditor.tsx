@@ -40,7 +40,16 @@ function TaskEditor({onCancel, onCreate, onEdit, initialTask, user}: TaskEditorP
             [field]: value
         }))
     }
-
+    function toggleOptionalProps(prop: keyof TaskData, value?: any) {
+        if (editedTask.hasOwnProperty(prop)) {
+            delete editedTask[prop];
+            setEditedTask({...editedTask});
+            return;
+        } else {
+            setEditedTask({...editedTask, [prop]: value});
+            return;
+        }
+    }
     return (
         <div className="flex flex-col gap-2.5 justify-center items-center p-5 text-2xl font-bold w-max">
             <h2>{initialTask ? "Edit Task" : "Create New Task"}</h2>
@@ -86,6 +95,15 @@ function TaskEditor({onCancel, onCreate, onEdit, initialTask, user}: TaskEditorP
                                onChange={(event) => updateField("priority", event.target.value)}/>
                         <label htmlFor="high">high</label>
                     </div>
+                </div>
+                <div className="flex gap-2 flex-col">
+                    <div className="flex gap-3">
+                    <p>Optional:</p>
+                        <input id="deadline" value="deadline" type="checkbox" onChange={()=>toggleOptionalProps("dueDate", Date.now())}/>
+                        <label htmlFor="deadline">deadline</label>
+                    </div>
+                    {editedTask.dueDate && <input defaultValue={new Date(editedTask.dueDate).toISOString().slice(0,16)} id="deadline-time" type="datetime-local"
+                            onBlur={(event) => updateField("dueDate", new Date(event.target.value).getTime() / 1000)}/>}
                 </div>
             </form>
             <div className="flex justify-between items-center w-sm">

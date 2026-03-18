@@ -42,6 +42,7 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
                 case "status":
                     return "logical"
                 case "createdAt":
+                case "dueDate":
                 case "customOrder":
                     return "numerical"
                 default:
@@ -80,8 +81,7 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
                 confirmText: "Delete",
                 btnVariant: "danger",
                 onConfirm: () => {
-                    deleteHandler(user, task);
-                    setConfirmDialog(null);
+                    deleteHandler(user, task).then(() => setConfirmDialog(null));
                 },
                 onCancel: () => {
                     setConfirmDialog(null)
@@ -101,10 +101,12 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
         }
         return
     }
+
     function getNextOrder(tasks: TaskData[] | null): number {
         if (!tasks || tasks.length === 0) return 100;
         return Math.max(...tasks.map(t => t.customOrder!)) + 100
     }
+
     async function addHandler(user: User | null, task: TaskData) {
         if (user && user.uid) {
             await addTaskToUser(user?.uid, {...task, createdAt: Date.now(), customOrder: getNextOrder(tasks)})
@@ -131,6 +133,7 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
         setIsEditorOpen(false)
         return
     }
+
     async function moveTaskHandler(task: TaskData, index: number, moveTo: "up" | "down") {
         setSortConfig({...sortConfig, key: "customOrder", sortMethod: "numerical"})
         const newOrder = moveItem(processedTasks, index, moveTo, sortConfig.direction)
@@ -138,6 +141,7 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
         console.log(newOrder)
         await updateHandler(user, task, {...task, customOrder: newOrder})
     }
+
     return (
         <div className="container mx-auto mt-5 flex flex-col items-center gap-5">
             <div className="flex justify-between items-center w-2xl">
@@ -180,9 +184,10 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
                 })}>switch sort direction
                 </button>
             </div>
-            {processedTasks && processedTasks.length > 0 ? <div>
+            {processedTasks && processedTasks.length > 0 ? <div className="flex gap-5 flex-wrap">
                 {processedTasks.map((task) => (
-                    <Task canManuallySort={sortConfig.key === "customOrder"} task={task} tasks={processedTasks} onDelete={confirmDelete} onEdit={handleEdit} key={task.id} onMove={moveTaskHandler}/>
+                    <Task canManuallySort={sortConfig.key === "customOrder"} task={task} tasks={processedTasks}
+                         onComplete={(task)=>updateHandler(user, task, task)} onDelete={confirmDelete} onEdit={handleEdit} key={task.id} onMove={moveTaskHandler}/>
                 ))}
             </div> : <div className="mt-36 flex flex-col items-center text-2xl">You currently have no tasks</div>}
             {isEditorOpen && <Modal isOpen={isEditorOpen} onClose={() => setIsEditorOpen(false)}>

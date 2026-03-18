@@ -22,12 +22,16 @@ const Modal = ({isOpen, onClose, children}: ModalProps) => {
     }, [isOpen]);
 
     return (
-            <dialog ref={dialogRef} onClose={onClose} className="m-auto rounded-lg shadow-2xl/30">
-                <div className="relative">
-                    <button onClick={onClose} className="absolute right-2 font-bold text-xl">X</button>
-                    {children}
-                </div>
-            </dialog>
+        <dialog ref={dialogRef} onClose={onClose} onClick={(event) => {
+            if (event.currentTarget === event.target) {
+                onClose(event)
+            }
+        }} className="m-auto rounded-lg shadow-2xl/30">
+            <div className="relative" onClick={(event) => event.stopPropagation}>
+                <button onClick={onClose} className="absolute right-2 font-bold text-xl">X</button>
+                {children}
+            </div>
+        </dialog>
     );
 };
 export default Modal

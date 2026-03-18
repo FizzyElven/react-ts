@@ -1,4 +1,6 @@
 // Import the functions you need from the SDKs you need
+// noinspection SpellCheckingInspection
+
 import {initializeApp} from "firebase/app";
 import {getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc} from "firebase/firestore";
 import type {TaskData} from "../types/types.ts";
