@@ -15,18 +15,36 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
     const [editTask, setEditTask] = useState<TaskData | undefined>(undefined);
     const [tasks, setTasks] = useState<TaskData[] | null>(null);
     const [filters, setFilters] = useState<Partial<TaskData>>({});
+    const [search, setSearch] = useState<string>("");
     const [sortConfig, setSortConfig] = useState<SortArrayConfig<TaskData>>({
         key: "id",
         direction: "asc",
         sortMethod: "alphabetical"
     });
     const processedTasks = useMemo(() => {
-        if (tasks) {
+        if (tasks && Object.entries(filters).length > 0) {
             const filteredTasks = filterArray(tasks, filters)
-            return sortArray(filteredTasks, sortConfig)
+            console.log("filter")
+            if (!search) {
+                return sortArray(filteredTasks, sortConfig)
+            }
+            const searchedTasks: TaskData[] = filteredTasks.filter(task => {
+               return task.title.includes(search) || task.description.includes(search)
+            })
+            return sortArray(searchedTasks, sortConfig)
+        } else if (tasks) {
+            if (!search) {
+                return sortArray(tasks, sortConfig)
+            }
+            console.log("search", search)
+            const searchedTasks: TaskData[] = tasks.filter(task => {
+               return task.title.includes(search) || task.description.includes(search)
+            })
+            console.log(searchedTasks)
+            return sortArray(searchedTasks, sortConfig)
         }
         return null
-    }, [tasks, filters, sortConfig]);
+    }, [tasks, filters, sortConfig, search]);
     const handleSorting = (event: ChangeEvent<HTMLSelectElement>) => {
         const logicalOrder = () => {
             switch (event.target.value) {
@@ -144,6 +162,8 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
 
     return (
         <div className="container mx-auto mt-5 flex flex-col items-center gap-5">
+            <input onChange={event => setSearch(event.target.value)} placeholder="search"
+                   className="border-2 border-blue-600 rounded-md px-2 w-md text-2xl p-2.5"/>
             <div className="flex justify-between items-center w-2xl">
                 <button className="border-2 text-2xl border-blue-600 font-bold p-2.5 rounded-md cursor-pointer"
                         onClick={handleCreate}>
@@ -187,7 +207,8 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
             {processedTasks && processedTasks.length > 0 ? <div className="flex gap-5 flex-wrap">
                 {processedTasks.map((task) => (
                     <Task canManuallySort={sortConfig.key === "customOrder"} task={task} tasks={processedTasks}
-                         onComplete={(task)=>updateHandler(user, task, task)} onDelete={confirmDelete} onEdit={handleEdit} key={task.id} onMove={moveTaskHandler}/>
+                          onComplete={(task) => updateHandler(user, task, task)} onDelete={confirmDelete}
+                          onEdit={handleEdit} key={task.id} onMove={moveTaskHandler}/>
                 ))}
             </div> : <div className="mt-36 flex flex-col items-center text-2xl">You currently have no tasks</div>}
             {isEditorOpen && <Modal isOpen={isEditorOpen} onClose={() => setIsEditorOpen(false)}>
