@@ -4,7 +4,6 @@ import {FireContext} from "../Context.tsx";
 
 function ProtectedRoutes() {
     const {auth} = useContext(FireContext);
-    console.log(auth.currentUser);
     return auth.currentUser ? <Outlet/> : <Navigate to="/login" replace={true}/>
 }
 

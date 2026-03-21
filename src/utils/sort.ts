@@ -1,22 +1,23 @@
 import type {SortArrayConfig} from "../types/types.ts";
+import {CUSTOM_SORT_STEP, SORT_DIRECTION, SORT_METHOD, type sortDirection} from "../constants/sortConstants.ts";
 
 export function sortArray<T>(array: T[], sortOptions: SortArrayConfig<T>) {
     if (array && array.length > 0) {
         return [...array].sort((a, b) => {
-            const isAsc = sortOptions.direction === 'asc';
+            const isAsc = sortOptions.direction === SORT_DIRECTION.ASC;
             let comparison = 0;
             switch (sortOptions.sortMethod) {
-                case "alphabetical":
+                case SORT_METHOD.ALPHABETICAL:
                     const aValue = a[sortOptions.key] ?? ""
                     const bValue = b[sortOptions.key] ?? ""
                     console.log("inside switch alphabetical")
                     comparison = String(aValue).localeCompare(String(bValue))
                     break;
-                case "numerical":
+                case SORT_METHOD.NUMERICAL:
                     console.log("inside switch num")
                     comparison = Number(a[sortOptions.key]) - Number(b[sortOptions.key])
                     break;
-                case "logical":
+                case SORT_METHOD.LOGICAL:
                     console.log("inside switch logical")
                     if (sortOptions.logicOrder) {
                         const logicMap = createLogicOrder(sortOptions.logicOrder);
@@ -39,12 +40,12 @@ export function createLogicOrder(order: string[]): Record<string, number> {
     }, {} as Record<string, number>)
 }
 
-export function moveItem(arr: any[] | null, currentIndex: number, moveTo: "up" | "down", direction: "asc" | "desc") {
+export function moveItem(arr: any[] | null, currentIndex: number, moveTo: "up" | "down", direction: sortDirection) {
     if (!arr) return
     const newArr = [...arr]
     let targetIndex: number;
     switch (direction) {
-        case "asc":
+        case SORT_DIRECTION.ASC:
             targetIndex = moveTo === 'up' ? currentIndex - 1 : currentIndex + 1
 
             if (targetIndex < 0 || targetIndex >= newArr.length) return;
@@ -57,17 +58,17 @@ export function moveItem(arr: any[] | null, currentIndex: number, moveTo: "up" |
             } else {
                 // To move DOWN: Midpoint between target and target's next
                 const prevNeighbor = newArr[targetIndex].customOrder;
-                const nextNeighbor = newArr[targetIndex + 1]?.customOrder ?? prevNeighbor + 100;
+                const nextNeighbor = newArr[targetIndex + 1]?.customOrder ?? prevNeighbor + CUSTOM_SORT_STEP;
                 return (prevNeighbor + nextNeighbor) / 2;
             }
-        case "desc":
+        case SORT_DIRECTION.DESC:
             targetIndex = moveTo === 'up' ? currentIndex - 1 : currentIndex + 1
             if (targetIndex < 0 || targetIndex >= newArr.length) return;
             console.log("move desc")
             if (moveTo === 'up') {
                 // To move UP: Midpoint between target's previous and target
                 const prevNeighbor = newArr[targetIndex].customOrder;
-                const nextNeighbor = newArr[targetIndex - 1]?.customOrder ?? prevNeighbor + 100;
+                const nextNeighbor = newArr[targetIndex - 1]?.customOrder ?? prevNeighbor + CUSTOM_SORT_STEP;
                 return (prevNeighbor + nextNeighbor) / 2;
             } else {
                 // To move DOWN: Midpoint between target and target's next

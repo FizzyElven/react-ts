@@ -3,7 +3,6 @@ import Login from "./components/Login.tsx";
 import Tasks from "./components/Tasks.tsx";
 import Navbar from "./components/Navbar.tsx";
 import ProtectedRoutes from "./components/ProtectedRoutes.tsx";
-import firebase from "firebase/compat/app";
 import {getAuth, GoogleAuthProvider, signInWithPopup, signOut} from "firebase/auth";
 import {firebaseApp} from "./services/firebase.ts";
 import {FireContext} from "./Context.tsx";
@@ -18,21 +17,16 @@ function App() {
     const navigate = useNavigate();
     const {loading, user} = useAuth()
     const auth = getAuth(firebaseApp);
-    console.log(auth)
-    const firestore = firebase.firestore
     const [confirmAction, setConfirmAction] = useState<ConfirmDialog | null>(null);
     const login = async () => {
         const provider = new GoogleAuthProvider();
-        const {user} = await signInWithPopup(auth, provider)
-        console.log(user)
+        await signInWithPopup(auth, provider)
         if (auth.currentUser) {
             navigate("tasks", {replace: true});
         }
     }
     const logout = async () => {
         await signOut(auth)
-        console.log("Signed out")
-        console.log(auth)
         if (!auth.currentUser) {
             navigate("login", {replace: true});
         }
@@ -42,8 +36,6 @@ function App() {
         <div className="flex flex-col">
             <FireContext.Provider value={
                 {
-                    firestore,
-                    firebase,
                     auth,
                     user,
                     login,

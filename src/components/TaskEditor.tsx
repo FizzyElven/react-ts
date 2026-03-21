@@ -1,38 +1,28 @@
-import {useEffect, useState} from "react";
-import type {TaskData} from "../types/types.ts";
-import type {User} from "firebase/auth";
+import {useState} from "react";
+import {TASK_PRIORITY, TASK_STATUS, type TaskData} from "../types/types.ts";
 
 interface TaskEditorProps {
     onCancel: () => void;
-    user: User | null;
-    onCreate: (user: User | null, task: TaskData) => Promise<void>
-    onEdit: (user: User | null, task: TaskData, initialTask: TaskData) => Promise<void>;
+    onCreate: (task: TaskData) => Promise<void>
+    onEdit: (task: TaskData, initialTask: TaskData) => Promise<void>;
     initialTask?: TaskData;
 }
 
-function TaskEditor({onCancel, onCreate, onEdit, initialTask, user}: TaskEditorProps) {
-    const [editedTask, setEditedTask] = useState<TaskData>({
+function TaskEditor({onCancel, onCreate, onEdit, initialTask}: TaskEditorProps) {
+    const [editedTask, setEditedTask] = useState<TaskData>(initialTask ? initialTask : {
         title: "",
         description: "",
-        priority: "low",
-        status: "idle",
+        priority: TASK_PRIORITY.LOW,
+        status: TASK_STATUS.IDLE,
     });
-    useEffect(() => {
-        if (initialTask) {
-            setEditedTask(initialTask)
-        } else {
 
-        }
-    },[initialTask])
     const handleSubmit = () => {
-        console.log("handleSubmit");
         if (initialTask) {
-           return onEdit(user, initialTask, editedTask);
+           return onEdit(initialTask, editedTask);
         } else {
-           return onCreate(user, editedTask)
+           return onCreate(editedTask)
         }
     }
-    console.log("task editor render")
 
     function updateField(field: keyof TaskData, value: any) {
         setEditedTask(task => ({
@@ -65,16 +55,16 @@ function TaskEditor({onCancel, onCreate, onEdit, initialTask, user}: TaskEditorP
                 <div className="flex items-center gap-2">
                     <p>Status:</p>
                     <div className="flex gap-3">
-                        <input id="idle" value="idle" name="status" type="radio"
-                               checked={editedTask?.status === "idle"}
+                        <input id="idle" value={TASK_STATUS.IDLE} name="status" type="radio"
+                               checked={editedTask?.status === TASK_STATUS.IDLE}
                                onChange={(event) => updateField("status", event.target.value)}/>
                         <label htmlFor="idle">idle</label>
-                        <input id="inprogress" value="in progress" name="status" type="radio"
-                               checked={editedTask?.status === "in progress"}
+                        <input id="inprogress" value={TASK_STATUS.IN_PROGRESS} name="status" type="radio"
+                               checked={editedTask?.status === TASK_STATUS.IN_PROGRESS}
                                onChange={(event) => updateField("status", event.target.value)}/>
                         <label htmlFor="inprogress">in progress</label>
-                        <input id="completed" value="completed" name="status" type="radio"
-                               checked={editedTask?.status === "completed"}
+                        <input id="completed" value={TASK_STATUS.COMPLETED} name="status" type="radio"
+                               checked={editedTask?.status === TASK_STATUS.COMPLETED}
                                onChange={(event) => updateField("status", event.target.value)}/>
                         <label htmlFor="completed">completed</label>
                     </div>
@@ -82,16 +72,16 @@ function TaskEditor({onCancel, onCreate, onEdit, initialTask, user}: TaskEditorP
                 <div className="flex items-center gap-2">
                     <p>Priority:</p>
                     <div className="flex gap-3">
-                        <input id="low" value="low" name="priority" type="radio"
-                               checked={editedTask?.priority === "low"}
+                        <input id="low" value={TASK_PRIORITY.LOW} name="priority" type="radio"
+                               checked={editedTask?.priority === TASK_PRIORITY.LOW}
                                onChange={(event) => updateField("priority", event.target.value)}/>
                         <label htmlFor="low">low</label>
-                        <input id="medium" value="medium" name="priority" type="radio"
-                               checked={editedTask?.priority === "medium"}
+                        <input id="medium" value={TASK_PRIORITY.MEDIUM} name="priority" type="radio"
+                               checked={editedTask?.priority === TASK_PRIORITY.MEDIUM}
                                onChange={(event) => updateField("priority", event.target.value)}/>
                         <label htmlFor="medium">medium</label>
-                        <input id="high" value="high" name="priority" type="radio"
-                               checked={editedTask?.priority === "high"}
+                        <input id="high" value={TASK_PRIORITY.HIGH} name="priority" type="radio"
+                               checked={editedTask?.priority === TASK_PRIORITY.HIGH}
                                onChange={(event) => updateField("priority", event.target.value)}/>
                         <label htmlFor="high">high</label>
                     </div>

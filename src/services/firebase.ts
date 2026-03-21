@@ -6,7 +6,8 @@ import {getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc} fr
 import type {TaskData} from "../types/types.ts";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
-
+const USERS_COLLECTION = "users";
+const TASK_COLLECTION = "tasks";
 // Your web app's Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyClCZrothVuL2FeDwjzpGQslqbuK3HJkr4",
@@ -23,7 +24,7 @@ const db = getFirestore(firebaseApp);
 
 export async function addTaskToUser(userId: string, taskData: TaskData) {
     try {
-        const tasksRef = await addDoc(collection(db, "users", userId, "tasks"), taskData);
+        const tasksRef = await addDoc(collection(db, USERS_COLLECTION, userId, TASK_COLLECTION), taskData);
         console.log("Document written with ID: ", tasksRef.id);
     } catch (e) {
         console.log(e);
@@ -32,7 +33,7 @@ export async function addTaskToUser(userId: string, taskData: TaskData) {
 
 export async function getUserTasks(userId: string) {
     try {
-        const querySnapshot = await getDocs(collection(db, "users", userId, "tasks"));
+        const querySnapshot = await getDocs(collection(db, USERS_COLLECTION, userId, TASK_COLLECTION));
         if (querySnapshot.empty) return
         return querySnapshot.docs.map(doc => ({
             id: doc.id,
@@ -45,7 +46,7 @@ export async function getUserTasks(userId: string) {
 
 export async function deleteUserTask(userId: string, taskId: string) {
     try {
-        await deleteDoc(doc(db, "users", userId, "tasks", taskId));
+        await deleteDoc(doc(db, USERS_COLLECTION, userId, TASK_COLLECTION, taskId));
         console.log("task deleted successfully.")
     } catch (e) {
         console.log(e);
@@ -53,7 +54,7 @@ export async function deleteUserTask(userId: string, taskId: string) {
 }
 export async function updateUserTask(userId: string, taskId: string, taskData: TaskData) {
     try {
-        await updateDoc(doc(db, "users", userId, "tasks", taskId), {
+        await updateDoc(doc(db, USERS_COLLECTION, userId, TASK_COLLECTION, taskId), {
             ...taskData,
         })
 
