@@ -3,11 +3,11 @@ import {FireContext} from "../Context.tsx";
 import {addTaskToUser, deleteUserTask, getUserTasks, updateUserTask} from "../services/firebase.ts";
 import {
     BTN_VARIANT,
-    type ConfirmDialog,
-    type SortArrayConfig,
     TASK_PRIORITY,
     TASK_STATUS,
-    type TaskData
+    type ConfirmDialog,
+    type SortArrayConfig,
+    type TaskData, type FilterConfig
 } from "../types/types.ts";
 import Task from "./Task.tsx";
 import Modal from "./Modal.tsx";
@@ -17,6 +17,7 @@ import {moveItem, sortArray} from "../utils/sort.ts";
 import {searchInArray} from "../utils/search.ts";
 import {useNavigate} from "react-router";
 import {CUSTOM_SORT_STEP, SORT_DIRECTION, SORT_METHOD} from "../constants/sortConstants.ts";
+import Filters from "./Filters.tsx";
 
 function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog | null) => void }) {
     const {user} = useContext(FireContext)
@@ -28,7 +29,7 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
     const [isEditorOpen, setIsEditorOpen] = useState(false);
     const [editTask, setEditTask] = useState<TaskData | undefined>(undefined);
     const [tasks, setTasks] = useState<TaskData[] | []>([]);
-    const [filters, setFilters] = useState<Partial<TaskData>>({});
+    const [filtersConfig, setFiltersConfig] = useState<FilterConfig<TaskData>[]>([]);
     const [search, setSearch] = useState<string>("");
     const [sortConfig, setSortConfig] = useState<SortArrayConfig<TaskData>>({
         key: "id",
@@ -36,8 +37,8 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
         sortMethod: SORT_METHOD.ALPHABETICAL,
     });
     const processedTasks = useMemo(() => {
-        if (tasks && Object.entries(filters).length > 0) {
-            const filteredTasks = filterArray(tasks, filters)
+        if (tasks && Object.entries(filtersConfig).length > 0) {
+            const filteredTasks = filterArray(tasks, filtersConfig)
             if (!search) {
                 return sortArray(filteredTasks, sortConfig)
             }
@@ -51,7 +52,7 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
             return sortArray(searchedTasks, sortConfig)
         }
         return null
-    }, [tasks, filters, sortConfig, search]);
+    }, [tasks, filtersConfig, sortConfig, search]);
     const handleSorting = (event: ChangeEvent<HTMLSelectElement>) => {
         const logicalOrder = () => {
             switch (event.target.value) {
@@ -80,13 +81,6 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
             sortMethod: sortingMethod(),
             logicOrder: logicalOrder()
         })
-    }
-
-    function updateFilters(field: keyof TaskData, value: any) {
-        setFilters(filters => ({
-            ...filters,
-            [field]: value
-        }))
     }
 
     const handleCreate = () => {
@@ -167,6 +161,7 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
 
     return (
         <div className="container mx-auto mt-5 flex flex-col items-center gap-5">
+            <Filters setFiltersConfig={setFiltersConfig} filtersConfig={filtersConfig}/>
             <input onChange={event => setSearch(event.target.value)} placeholder="search"
                    className="border-2 border-blue-600 rounded-md px-2 w-md text-2xl p-2.5"/>
             <div className="flex justify-between items-center w-2xl">
@@ -181,15 +176,7 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
             </div>
             <div className="flex justify-between items-center ">
                 <button className="border-2 text-2xl border-blue-600 font-bold p-2.5 rounded-md cursor-pointer"
-                        onClick={() => updateFilters("priority", "high")}>
-                    Filter test priority
-                </button>
-                <button className="border-2 text-2xl border-blue-600 font-bold p-2.5 rounded-md cursor-pointer"
-                        onClick={() => updateFilters("status", "completed")}>
-                    Filter test status
-                </button>
-                <button className="border-2 text-2xl border-blue-600 font-bold p-2.5 rounded-md cursor-pointer"
-                        onClick={() => setFilters({})}>
+                        onClick={() => setFiltersConfig([])}>
                     Clear filters
                 </button>
                 <select name="sort" value={sortConfig.key}

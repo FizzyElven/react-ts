@@ -18,6 +18,7 @@ export const TASK_STATUS = {
 type btnVariant = (typeof BTN_VARIANT)[keyof typeof BTN_VARIANT]
 type taskPriority = (typeof TASK_PRIORITY)[keyof typeof TASK_PRIORITY]
 type taskStatus = (typeof TASK_STATUS)[keyof typeof TASK_STATUS]
+
 export interface TaskData {
     id?: string;
     createdAt?: number;
@@ -44,3 +45,13 @@ export interface SortArrayConfig<T, K extends keyof T = keyof T> {
     sortMethod: SortMethod;
     logicOrder?: string[] | null;
 }
+export interface FilterConfig <T>{
+    field?: keyof T,
+    value?: any | any[]
+}
+export const FILTERS = {
+    STATUS: "status",
+    PRIORITY: "priority",
+    OTHER: "other",
+} as const;
+export type FilterType = typeof FILTERS[keyof typeof FILTERS];
