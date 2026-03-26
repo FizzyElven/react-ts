@@ -11,13 +11,13 @@ export const TASK_PRIORITY = {
 } as const;
 export const TASK_STATUS = {
     IDLE: "idle",
-    IN_PROGRESS: "inProgress",
+    ACTIVE: "active",
     COMPLETED: "completed",
     OVERDUE: "overdue",
 } as const;
-type btnVariant = (typeof BTN_VARIANT)[keyof typeof BTN_VARIANT]
-type taskPriority = (typeof TASK_PRIORITY)[keyof typeof TASK_PRIORITY]
-type taskStatus = (typeof TASK_STATUS)[keyof typeof TASK_STATUS]
+export type btnVariant = (typeof BTN_VARIANT)[keyof typeof BTN_VARIANT]
+export type taskPriority = (typeof TASK_PRIORITY)[keyof typeof TASK_PRIORITY]
+export type taskStatus = (typeof TASK_STATUS)[keyof typeof TASK_STATUS]
 
 export interface TaskData {
     id?: string;

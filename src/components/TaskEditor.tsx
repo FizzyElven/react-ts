@@ -1,5 +1,7 @@
 import {useState} from "react";
-import {TASK_PRIORITY, TASK_STATUS, type TaskData} from "../types/types.ts";
+import {BTN_VARIANT, TASK_PRIORITY, TASK_STATUS, type TaskData} from "../types/types.ts";
+import Button from "./ui/Button.tsx";
+import InputField from "./ui/InputField.tsx";
 
 interface TaskEditorProps {
     onCancel: () => void;
@@ -18,9 +20,9 @@ function TaskEditor({onCancel, onCreate, onEdit, initialTask}: TaskEditorProps) 
 
     const handleSubmit = () => {
         if (initialTask) {
-           return onEdit(initialTask, editedTask);
+            return onEdit(initialTask, editedTask);
         } else {
-           return onCreate(editedTask)
+            return onCreate(editedTask)
         }
     }
 
@@ -30,6 +32,7 @@ function TaskEditor({onCancel, onCreate, onEdit, initialTask}: TaskEditorProps) 
             [field]: value
         }))
     }
+
     function toggleOptionalProps(prop: keyof TaskData, value?: any) {
         if (editedTask.hasOwnProperty(prop)) {
             delete editedTask[prop];
@@ -40,38 +43,49 @@ function TaskEditor({onCancel, onCreate, onEdit, initialTask}: TaskEditorProps) 
             return;
         }
     }
+
     return (
-        <div className="flex flex-col gap-2.5 justify-center items-center p-5 text-2xl font-bold w-max">
-            <h2>{initialTask ? "Edit Task" : "Create New Task"}</h2>
-            <form className="flex flex-col gap-5 mb-5" onSubmit={(event) => event.preventDefault()}>
-                <label htmlFor="title">Title:</label>
-                <input id="title" defaultValue={editedTask?.title}
-                       className="border-2 border-blue-600 rounded-md px-2"
-                       onBlur={(event) => updateField("title", event.target.value)}/>
-                <label htmlFor="description">Description:</label>
-                <input id="description" defaultValue={editedTask?.description}
-                       className="border-2 border-blue-600 rounded-md px-2"
-                       onBlur={(event) => updateField("description", event.target.value)}/>
-                <div className="flex items-center gap-2">
-                    <p>Status:</p>
-                    <div className="flex gap-3">
+        <div className="flex flex-col gap-2.5 justify-center items-center p-5 text-2xl w-max">
+            <h2 className="font-bold">{initialTask ? "Edit Task" : "Create New Task"}</h2>
+            <form className="flex flex-col items-center gap-2.5 mb-5" onSubmit={(event) => event.preventDefault()}>
+                {/*<label htmlFor="title" className="font-bold">Title</label>*/}
+                <InputField label="Tittle" defaultValue={editedTask?.title}
+                            onBlur={(event) => updateField("title", event.target.value)}/>
+                {/*<div className="group transition shadow-lg shadow-gray-200 hover:border-blue-400*/}
+                {/*    focus-within:border-blue-300 focus-within:shadow-lg border-2 border-blue-600 rounded-full w-md text-2xl px-5 py-2.5">*/}
+                {/*    <input id="title" defaultValue={editedTask?.title}*/}
+                {/*           className="w-full outline-none"*/}
+                {/*           onBlur={(event) => updateField("title", event.target.value)}/>*/}
+                {/*</div>*/}
+                {/*<label htmlFor="description" className="font-bold">Description</label>*/}
+                <InputField label="Description" defaultValue={editedTask?.description}
+                            onBlur={(event) => updateField("description", event.target.value)}/>
+                {/*<div className="group transition shadow-lg shadow-gray-200 hover:border-blue-400*/}
+                {/*    focus-within:border-blue-300 focus-within:shadow-lg border-2 border-blue-600 rounded-full w-md text-2xl px-5 py-2.5">*/}
+                {/*    <input id="description" defaultValue={editedTask?.description}*/}
+                {/*           className="w-full outline-none"*/}
+                {/*           onBlur={(event) => updateField("description", event.target.value)}/>*/}
+                {/*</div>*/}
+                <div className="flex flex-col items-center">
+                    <p className="font-bold">Status</p>
+                    <div className="flex gap-3 items-center">
                         <input id="idle" value={TASK_STATUS.IDLE} name="status" type="radio"
                                checked={editedTask?.status === TASK_STATUS.IDLE}
                                onChange={(event) => updateField("status", event.target.value)}/>
                         <label htmlFor="idle">idle</label>
-                        <input id="inprogress" value={TASK_STATUS.IN_PROGRESS} name="status" type="radio"
-                               checked={editedTask?.status === TASK_STATUS.IN_PROGRESS}
+                        <input id="active" value={TASK_STATUS.ACTIVE} name="status" type="radio"
+                               checked={editedTask?.status === TASK_STATUS.ACTIVE}
                                onChange={(event) => updateField("status", event.target.value)}/>
-                        <label htmlFor="inprogress">in progress</label>
+                        <label htmlFor="active">active</label>
                         <input id="completed" value={TASK_STATUS.COMPLETED} name="status" type="radio"
                                checked={editedTask?.status === TASK_STATUS.COMPLETED}
                                onChange={(event) => updateField("status", event.target.value)}/>
                         <label htmlFor="completed">completed</label>
                     </div>
                 </div>
-                <div className="flex items-center gap-2">
-                    <p>Priority:</p>
-                    <div className="flex gap-3">
+                <div className="flex flex-col items-center">
+                    <p className="font-bold">Priority</p>
+                    <div className="flex gap-3 items-center">
                         <input id="low" value={TASK_PRIORITY.LOW} name="priority" type="radio"
                                checked={editedTask?.priority === TASK_PRIORITY.LOW}
                                onChange={(event) => updateField("priority", event.target.value)}/>
@@ -87,24 +101,27 @@ function TaskEditor({onCancel, onCreate, onEdit, initialTask}: TaskEditorProps) 
                     </div>
                 </div>
                 <div className="flex gap-2 flex-col">
-                    <div className="flex gap-3">
-                    <p>Optional:</p>
-                        <input id="deadline" value="deadline" type="checkbox" onChange={()=>toggleOptionalProps("dueDate", Date.now())}/>
-                        <label htmlFor="deadline">deadline</label>
+                    <div className="flex flex-col items-center">
+                        <p className="font-bold">Optional</p>
+                        <div className="flex items-center justify-center gap-3">
+                            <input className="size-4" id="deadline" value="deadline" type="checkbox"
+                                   onChange={() => toggleOptionalProps("dueDate", Date.now())}/>
+                            <label className="flex items-center" htmlFor="deadline">deadline</label>
+                        </div>
                     </div>
-                    {editedTask.dueDate && <input defaultValue={new Date(editedTask.dueDate).toISOString().slice(0,16)} id="deadline-time" type="datetime-local"
-                            onBlur={(event) => updateField("dueDate", new Date(event.target.value).getTime() / 1000)}/>}
+                    {editedTask.dueDate &&
+                      <input defaultValue={new Date(editedTask.dueDate).toISOString().slice(0, 16)} id="deadline-time"
+                             type="datetime-local"
+                             onBlur={(event) => updateField("dueDate", new Date(event.target.value).getTime() / 1000)}/>}
                 </div>
             </form>
             <div className="flex justify-between items-center w-sm">
-                <button onClick={handleSubmit}
-                        className="text-white text-2xl bg-blue-600 font-bold p-2.5 rounded-md cursor-pointer w-max">
+                <Button btnVariant={BTN_VARIANT.PRIMARY} onClick={handleSubmit}>
                     Submit
-                </button>
-                <button onClick={onCancel}
-                        className="text-white text-2xl bg-red-600 font-bold p-2.5 rounded-md cursor-pointer w-max">
+                </Button>
+                <Button btnVariant={BTN_VARIANT.DANGER} onClick={onCancel}>
                     Cancel
-                </button>
+                </Button>
                 <button onClick={() => console.log(editedTask)}>log</button>
             </div>
         </div>

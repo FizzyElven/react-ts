@@ -18,6 +18,8 @@ import {searchInArray} from "../utils/search.ts";
 import {useNavigate} from "react-router";
 import {CUSTOM_SORT_STEP, SORT_DIRECTION, SORT_METHOD} from "../constants/sortConstants.ts";
 import Filters from "./Filters.tsx";
+import Button from "./ui/Button.tsx";
+import InputField from "./ui/InputField.tsx";
 
 function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog | null) => void }) {
     const {user} = useContext(FireContext)
@@ -57,9 +59,9 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
         const logicalOrder = () => {
             switch (event.target.value) {
                 case "priority":
-                    return [TASK_PRIORITY.LOW, TASK_PRIORITY.MEDIUM, TASK_PRIORITY.HIGH]
+                    return Object.values(TASK_PRIORITY)
                 case "status":
-                    return [TASK_STATUS.IDLE, TASK_STATUS.IN_PROGRESS, TASK_STATUS.COMPLETED, TASK_STATUS.OVERDUE]
+                    return Object.values(TASK_STATUS)
             }
         }
         const sortingMethod = () => {
@@ -161,48 +163,63 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
 
     return (
         <div className="container mx-auto mt-5 flex flex-col items-center gap-5">
+            <div className="flex justify-around items-center w-full">
+                <Button btnVariant={BTN_VARIANT.PRIMARY} onClick={handleCreate}>CREATE NEW TASK</Button>
+                <Button btnVariant={BTN_VARIANT.PRIMARY} onClick={getHandler}>GET TASKS</Button>
+                {/*<button className="hover:border-blue-400*/}
+                {/*    focus-within:border-blue-300 transition hover:bg-gray-50 shadow-lg shadow-gray-200 border-2 text-2xl border-blue-600 p-2.5 rounded-full cursor-pointer"*/}
+                {/*        onClick={handleCreate}>*/}
+                {/*    CREATE NEW TASK*/}
+                {/*</button>*/}
+                {/*<button className="hover:border-blue-400*/}
+                {/*    focus-within:border-blue-300 transition hover:bg-gray-50 shadow-lg shadow-gray-200 border-2 text-2xl border-blue-600 p-2.5 rounded-full cursor-pointer"*/}
+                {/*        onClick={getHandler}>*/}
+                {/*    GET TASKS*/}
+                {/*</button>*/}
+            </div>
             <Filters setFiltersConfig={setFiltersConfig} filtersConfig={filtersConfig}/>
-            <input onChange={event => setSearch(event.target.value)} placeholder="search"
-                   className="border-2 border-blue-600 rounded-md px-2 w-md text-2xl p-2.5"/>
-            <div className="flex justify-between items-center w-2xl">
-                <button className="border-2 text-2xl border-blue-600 font-bold p-2.5 rounded-md cursor-pointer"
-                        onClick={handleCreate}>
-                    CREATE NEW TASK
-                </button>
-                <button className="border-2 text-2xl border-blue-600 font-bold p-2.5 rounded-md cursor-pointer"
-                        onClick={getHandler}>
-                    TEST get tasks
-                </button>
-            </div>
-            <div className="flex justify-between items-center ">
-                <button className="border-2 text-2xl border-blue-600 font-bold p-2.5 rounded-md cursor-pointer"
-                        onClick={() => setFiltersConfig([])}>
-                    Clear filters
-                </button>
-                <select name="sort" value={sortConfig.key}
+            <div className="flex items-center gap-2.5">
+                {/*<div className="group transition shadow-lg shadow-gray-200 hover:border-blue-400*/}
+                {/*    focus-within:border-blue-300 focus-within:shadow-lg border-2 border-blue-600 rounded-full px-2 w-md text-2xl p-2.5 flex gap-2.5">*/}
+                {/*    🔍*/}
+                {/*    <input onChange={event => setSearch(event.target.value)} placeholder="Search Tasks"*/}
+                {/*           className="w-full outline-none"/>*/}
+                {/*</div>*/}
+                <InputField onChange={event => setSearch(event.target.value)} placeholder="Search Tasks">🔍</InputField>
+                <div className="group shadow-lg transition shadow-gray-200 hover:border-blue-400
+                    focus-within:border-blue-300 focus-within:shadow-lg border-2 border-blue-600 rounded-full px-2 text-2xl p-2.5 flex gap-2.5">
+                    <select
+                        className="outline-none"
+                        name="sort" value={sortConfig.key}
                         onChange={handleSorting}>
-                    <option value="id">ID</option>
-                    <option value="title">Title</option>
-                    <option value="status">Status</option>
-                    <option value="priority">Priority</option>
-                    <option value="createdAt">Creation time</option>
-                    <option value="customOrder">Custom order</option>
-                </select>
-                <button onClick={() => setSortConfig(prevState => {
-                    return {
-                        ...prevState,
-                        direction: prevState.direction === SORT_DIRECTION.ASC ? SORT_DIRECTION.DESC : SORT_DIRECTION.ASC,
-                    }
-                })}>switch sort direction
+                        <option value="title">Title</option>
+                        <option value="status">Status</option>
+                        <option value="priority">Priority</option>
+                        <option value="createdAt">Creation time</option>
+                        <option value="customOrder">Custom order</option>
+                    </select>
+                </div>
+                <button
+                    className="cursor-pointer font-bold border border-blue-500 transition shadow-lg shadow-gray-200 hover:border-blue-400 hover:border-2 w-10 h-10
+                    focus-within:border-blue-300 focus-within:shadow-lg rounded-full px-2 text-2xl p-2.5 flex gap-2.5"
+                    onClick={() => setSortConfig(prevState => {
+                        return {
+                            ...prevState,
+                            direction: prevState.direction === SORT_DIRECTION.ASC ? SORT_DIRECTION.DESC : SORT_DIRECTION.ASC,
+                        }
+                    })}><p
+                    className={"duration-300 transition-transform text-3xl w-full h-full leading-none flex items-center justify-center " + `${sortConfig.direction === SORT_DIRECTION.ASC ? "rotate-180" : "rotate-0"}`}>↓</p>
                 </button>
             </div>
-            {processedTasks && processedTasks.length > 0 ? <div className="flex gap-5 flex-wrap">
-                {processedTasks.map((task) => (
-                    <Task canManuallySort={sortConfig.key === "customOrder"} task={task} tasks={processedTasks}
-                          onComplete={(task) => updateHandler(task, task)} onDelete={confirmDelete}
-                          onEdit={handleEdit} key={task.id} onMove={moveTaskHandler}/>
-                ))}
-            </div> : <div className="mt-36 flex flex-col items-center text-2xl">You currently have no tasks</div>}
+
+            {processedTasks && processedTasks.length > 0 ?
+                <div className="flex gap-5 flex-wrap items-start w-full justify-center">
+                    {processedTasks.map((task) => (
+                        <Task canManuallySort={sortConfig.key === "customOrder"} task={task} tasks={processedTasks}
+                              onChangeStatus={(task) => updateHandler(task, task)} onDelete={confirmDelete}
+                              onEdit={handleEdit} key={task.id} onMove={moveTaskHandler}/>
+                    ))}
+                </div> : <div className="mt-36 flex flex-col items-center text-2xl">You currently have no tasks</div>}
             {isEditorOpen && <Modal isOpen={isEditorOpen} onClose={() => setIsEditorOpen(false)}>
               <TaskEditor onCreate={addHandler} onEdit={updateHandler}
                           onCancel={() => setIsEditorOpen(false)} initialTask={editTask}/>

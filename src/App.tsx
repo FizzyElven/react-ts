@@ -1,6 +1,6 @@
 import {Navigate, Route, Routes, useNavigate} from "react-router";
-import Login from "./components/Login.tsx";
-import Tasks from "./components/Tasks.tsx";
+// import Login from "./components/Login.tsx";
+// import Tasks from "./components/Tasks.tsx";
 import Navbar from "./components/Navbar.tsx";
 import ProtectedRoutes from "./components/ProtectedRoutes.tsx";
 import {getAuth, GoogleAuthProvider, signInWithPopup, signOut} from "firebase/auth";
@@ -8,10 +8,12 @@ import {firebaseApp} from "./services/firebase.ts";
 import {FireContext} from "./Context.tsx";
 import {useAuth} from "./hooks/Hooks.tsx";
 import Loader from "./components/Loader.tsx";
-import {useState} from "react";
+import {lazy, useState} from "react";
 import Modal from "./components/Modal.tsx";
 import {ConfirmationDialog} from "./components/ConfirmationDialog.tsx";
 import type {ConfirmDialog} from "./types/types.ts";
+const Login = lazy(() => import("./components/Login"));
+const Tasks = lazy(() => import("./components/Tasks.tsx"));
 
 function App() {
     const navigate = useNavigate();

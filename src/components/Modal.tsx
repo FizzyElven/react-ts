@@ -26,9 +26,11 @@ const Modal = ({isOpen, onClose, children}: ModalProps) => {
             if (event.currentTarget === event.target) {
                 onClose(event)
             }
-        }} className="m-auto rounded-lg shadow-2xl/30">
+        }} className="m-auto rounded-2xl shadow-2xl/30 border border-gray-400">
             <div className="relative" onClick={(event) => event.stopPropagation}>
-                <button onClick={onClose} className="absolute right-2 font-bold text-xl">X</button>
+                <button onClick={onClose} className="absolute leading-none border border-transparent focus-visible:border-blue-300 focus-visible:shadow-lg flex justify-center items-center hover:bg-gray-100 top-2 right-2 font-bold text-3xl outline-none w-11.25 h-11.25 rounded-full">
+                    <p className="leading-none inline-block transform -translate-y-px">×</p>
+                </button>
                 {children}
             </div>
         </dialog>
