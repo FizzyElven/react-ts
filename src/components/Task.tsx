@@ -19,7 +19,6 @@ interface Props {
 }
 
 const Task = ({task, tasks, onChangeStatus, onDelete, onEdit, onMove, canManuallySort}: Props) => {
-    console.log("task render")
     if (!tasks) return
 
     function getBorderColor(status: taskStatus) {

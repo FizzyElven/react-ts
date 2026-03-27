@@ -48,24 +48,10 @@ function TaskEditor({onCancel, onCreate, onEdit, initialTask}: TaskEditorProps) 
         <div className="flex flex-col gap-2.5 justify-center items-center p-5 text-2xl w-max">
             <h2 className="font-bold">{initialTask ? "Edit Task" : "Create New Task"}</h2>
             <form className="flex flex-col items-center gap-2.5 mb-5" onSubmit={(event) => event.preventDefault()}>
-                {/*<label htmlFor="title" className="font-bold">Title</label>*/}
                 <InputField label="Tittle" defaultValue={editedTask?.title}
                             onBlur={(event) => updateField("title", event.target.value)}/>
-                {/*<div className="group transition shadow-lg shadow-gray-200 hover:border-blue-400*/}
-                {/*    focus-within:border-blue-300 focus-within:shadow-lg border-2 border-blue-600 rounded-full w-md text-2xl px-5 py-2.5">*/}
-                {/*    <input id="title" defaultValue={editedTask?.title}*/}
-                {/*           className="w-full outline-none"*/}
-                {/*           onBlur={(event) => updateField("title", event.target.value)}/>*/}
-                {/*</div>*/}
-                {/*<label htmlFor="description" className="font-bold">Description</label>*/}
                 <InputField label="Description" defaultValue={editedTask?.description}
                             onBlur={(event) => updateField("description", event.target.value)}/>
-                {/*<div className="group transition shadow-lg shadow-gray-200 hover:border-blue-400*/}
-                {/*    focus-within:border-blue-300 focus-within:shadow-lg border-2 border-blue-600 rounded-full w-md text-2xl px-5 py-2.5">*/}
-                {/*    <input id="description" defaultValue={editedTask?.description}*/}
-                {/*           className="w-full outline-none"*/}
-                {/*           onBlur={(event) => updateField("description", event.target.value)}/>*/}
-                {/*</div>*/}
                 <div className="flex flex-col items-center">
                     <p className="font-bold">Status</p>
                     <div className="flex gap-3 items-center">
@@ -122,7 +108,6 @@ function TaskEditor({onCancel, onCreate, onEdit, initialTask}: TaskEditorProps) 
                 <Button btnVariant={BTN_VARIANT.DANGER} onClick={onCancel}>
                     Cancel
                 </Button>
-                <button onClick={() => console.log(editedTask)}>log</button>
             </div>
         </div>
     );

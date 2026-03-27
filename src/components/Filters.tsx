@@ -52,7 +52,6 @@ function Filters({setFiltersConfig, filtersConfig}: {
                     {dropDownOpen === filter.filterCategory &&
                       <div className="absolute z-50 border border-blue-500 top-12 bg-white text-2xl p-2.5 shadow-2xl shadow-gray-400 rounded-lg w-40 flex flex-col"
                            onMouseLeave={() => setDropDownOpen(null)}>
-                          {/*{filter.filterCategory}*/}
                           {filter.options.map(option => (
                               <div key={option} className="flex items-center gap-2.5">
                                   <input className="size-4" id={option} type="checkbox" value={option}

@@ -166,25 +166,9 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
             <div className="flex justify-around items-center w-full">
                 <Button btnVariant={BTN_VARIANT.PRIMARY} onClick={handleCreate}>CREATE NEW TASK</Button>
                 <Button btnVariant={BTN_VARIANT.PRIMARY} onClick={getHandler}>GET TASKS</Button>
-                {/*<button className="hover:border-blue-400*/}
-                {/*    focus-within:border-blue-300 transition hover:bg-gray-50 shadow-lg shadow-gray-200 border-2 text-2xl border-blue-600 p-2.5 rounded-full cursor-pointer"*/}
-                {/*        onClick={handleCreate}>*/}
-                {/*    CREATE NEW TASK*/}
-                {/*</button>*/}
-                {/*<button className="hover:border-blue-400*/}
-                {/*    focus-within:border-blue-300 transition hover:bg-gray-50 shadow-lg shadow-gray-200 border-2 text-2xl border-blue-600 p-2.5 rounded-full cursor-pointer"*/}
-                {/*        onClick={getHandler}>*/}
-                {/*    GET TASKS*/}
-                {/*</button>*/}
             </div>
             <Filters setFiltersConfig={setFiltersConfig} filtersConfig={filtersConfig}/>
             <div className="flex items-center gap-2.5">
-                {/*<div className="group transition shadow-lg shadow-gray-200 hover:border-blue-400*/}
-                {/*    focus-within:border-blue-300 focus-within:shadow-lg border-2 border-blue-600 rounded-full px-2 w-md text-2xl p-2.5 flex gap-2.5">*/}
-                {/*    🔍*/}
-                {/*    <input onChange={event => setSearch(event.target.value)} placeholder="Search Tasks"*/}
-                {/*           className="w-full outline-none"/>*/}
-                {/*</div>*/}
                 <InputField onChange={event => setSearch(event.target.value)} placeholder="Search Tasks">🔍</InputField>
                 <div className="group shadow-lg transition shadow-gray-200 hover:border-blue-400
                     focus-within:border-blue-300 focus-within:shadow-lg border-2 border-blue-600 rounded-full px-2 text-2xl p-2.5 flex gap-2.5">

@@ -1,6 +1,4 @@
 import {Navigate, Route, Routes, useNavigate} from "react-router";
-// import Login from "./components/Login.tsx";
-// import Tasks from "./components/Tasks.tsx";
 import Navbar from "./components/Navbar.tsx";
 import ProtectedRoutes from "./components/ProtectedRoutes.tsx";
 import {getAuth, GoogleAuthProvider, signInWithPopup, signOut} from "firebase/auth";

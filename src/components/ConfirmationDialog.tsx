@@ -1,7 +1,6 @@
 import {BTN_VARIANT, type ConfirmDialog} from "../types/types.ts";
 import Button from "./ui/Button.tsx";
 
-
 export function ConfirmationDialog({title, text, btnVariant, confirmText, onConfirm, onCancel}: ConfirmDialog) {
     return (
         <div className="flex flex-col gap-2.5 justify-center items-center p-5">
