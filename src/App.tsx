@@ -2,7 +2,7 @@ import {Navigate, Route, Routes, useNavigate} from "react-router";
 import Navbar from "./components/Navbar.tsx";
 import ProtectedRoutes from "./components/ProtectedRoutes.tsx";
 import {getAuth, GoogleAuthProvider, signInWithPopup, signOut} from "firebase/auth";
-import {firebaseApp} from "./services/firebase.ts";
+import {firebaseApp, firestoreTaskStore} from "./services/firebase.ts";
 import {FireContext} from "./Context.tsx";
 import {useAuth} from "./hooks/Hooks.tsx";
 import Loader from "./components/Loader.tsx";
@@ -10,8 +10,11 @@ import {lazy, useState} from "react";
 import Modal from "./components/Modal.tsx";
 import {ConfirmationDialog} from "./components/ConfirmationDialog.tsx";
 import type {ConfirmDialog} from "./types/types.ts";
+import {TaskService} from "./services/TaskService.ts";
+
 const Login = lazy(() => import("./components/Login"));
 const Tasks = lazy(() => import("./components/Tasks.tsx"));
+const taskService = new TaskService(firestoreTaskStore);
 
 function App() {
     const navigate = useNavigate();
@@ -40,6 +43,7 @@ function App() {
                     user,
                     login,
                     logout,
+                    taskService,
                 }
             }>
                 <Navbar setConfirmDialog={setConfirmAction}/>

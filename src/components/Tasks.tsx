@@ -1,6 +1,5 @@
 import {type ChangeEvent, useContext, useMemo, useState} from "react";
 import {FireContext} from "../Context.tsx";
-import {addTaskToUser, deleteUserTask, getUserTasks, updateUserTask} from "../services/firebase.ts";
 import {
     BTN_VARIANT,
     TASK_PRIORITY,
@@ -22,7 +21,7 @@ import Button from "./ui/Button.tsx";
 import InputField from "./ui/InputField.tsx";
 
 function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog | null) => void }) {
-    const {user} = useContext(FireContext)
+    const {user, taskService} = useContext(FireContext)
     const navigate = useNavigate();
     if (!user) {
         navigate("/login", {replace: true});
@@ -112,7 +111,7 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
 
     async function getHandler() {
         if (user?.uid) {
-            const tasks = await getUserTasks(user.uid)
+            const tasks = await taskService.getUserTasks(user.uid)
             if (tasks && tasks.length > 0) {
                 setTasks(tasks)
             } else {
@@ -129,7 +128,7 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
 
     async function addHandler(task: TaskData) {
         if (user?.uid) {
-            await addTaskToUser(user.uid, {...task, createdAt: Date.now(), customOrder: getNextOrder()})
+            await taskService.addTaskToUser(user.uid, {...task, createdAt: Date.now(), customOrder: getNextOrder()})
             await getHandler()
             setIsEditorOpen(false)
         }
@@ -139,7 +138,7 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
 
     async function deleteHandler(task: TaskData) {
         if (user?.uid) {
-            await deleteUserTask(user.uid, task.id!)
+            await taskService.deleteUserTask(user.uid, task.id!)
             await getHandler()
         }
         return
@@ -147,7 +146,7 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
 
     async function updateHandler(task: TaskData, updatedTask: TaskData) {
         if (user?.uid) {
-            await updateUserTask(user.uid, task.id!, updatedTask)
+            await taskService.updateUserTask(user.uid, task.id!, updatedTask)
             await getHandler()
         }
         setIsEditorOpen(false)
