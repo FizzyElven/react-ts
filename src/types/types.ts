@@ -46,7 +46,7 @@ export interface SortArrayConfig<T, K extends keyof T = keyof T> {
     logicOrder?: string[] | null;
 }
 export interface FilterConfig <T>{
-    field?: keyof T,
+    field?: keyof T | "other",
     value?: any | any[]
 }
 export const FILTERS = {

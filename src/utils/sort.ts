@@ -2,7 +2,7 @@ import type {SortArrayConfig} from "../types/types.ts";
 import {CUSTOM_SORT_STEP, SORT_DIRECTION, SORT_METHOD, type sortDirection} from "../constants/sortConstants.ts";
 
 export function sortArray<T>(array: T[], sortOptions: SortArrayConfig<T>) {
-    if (array && array.length > 0) {
+    if (array.length > 0) {
         return [...array].sort((a, b) => {
             const isAsc = sortOptions.direction === SORT_DIRECTION.ASC;
             let comparison = 0;
