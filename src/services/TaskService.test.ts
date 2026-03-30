@@ -27,7 +27,8 @@ describe('TaskService', () => {
                 title: 'Task 1',
                 description: "sad",
                 priority: "low",
-                status: "completed"
+                status: "completed",
+                customOrder: 0,
             };
             await service.addTaskToUser(userId, task);
             // Verify the Service correctly delegated the work to the Store
@@ -41,7 +42,8 @@ describe('TaskService', () => {
                 title: 'Task 1',
                 description: "sad",
                 priority: "low",
-                status: "completed"
+                status: "completed",
+                customOrder: 0,
             }];
             // Tell the mock what to return for this specific test
             vi.mocked(mockStore.getAll).mockResolvedValue(mockTasks);

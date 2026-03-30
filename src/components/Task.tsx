@@ -1,18 +1,12 @@
-import {
-    BTN_VARIANT,
-    TASK_PRIORITY,
-    TASK_STATUS,
-    type TaskData,
-    type taskPriority,
-    type taskStatus
-} from "../types/types.ts";
+import {BTN_VARIANT, TASK_STATUS, type TaskData} from "../types/types.ts";
 import Button from "./ui/Button.tsx";
+import {getBorderColor, getPriorityBar, getStatusEmoji} from "../utils/taskHelpers.ts";
 
 interface Props {
     task: TaskData,
     tasks: TaskData[] | null,
     onChangeStatus: (task: TaskData) => void,
-    onDelete: (task: TaskData) => void,
+    onDelete: (taskId: string) => void,
     onEdit: (task: TaskData) => void,
     onMove: (task: TaskData, index: number, direction: "up" | "down") => void,
     canManuallySort: boolean,
@@ -20,43 +14,6 @@ interface Props {
 
 const Task = ({task, tasks, onChangeStatus, onDelete, onEdit, onMove, canManuallySort}: Props) => {
     if (!tasks) return
-
-    function getBorderColor(status: taskStatus) {
-        switch (status) {
-            case TASK_STATUS.IDLE:
-                return "border-grey-600"
-            case TASK_STATUS.ACTIVE:
-                return "border-blue-600"
-            case TASK_STATUS.COMPLETED:
-                return "border-green-600"
-            case TASK_STATUS.OVERDUE:
-                return "border-red-600"
-        }
-    }
-
-    function getStatusEmoji(status: taskStatus) {
-        switch (status) {
-            case TASK_STATUS.IDLE:
-                return "😴"
-            case TASK_STATUS.ACTIVE:
-                return "⚡"
-            case TASK_STATUS.COMPLETED:
-                return "✔️"
-            case TASK_STATUS.OVERDUE:
-                return "❌"
-        }
-    }
-
-    function getPriorityBar(priority: taskPriority) {
-        switch (priority) {
-            case TASK_PRIORITY.LOW:
-                return "left-3.75"
-            case TASK_PRIORITY.MEDIUM:
-                return "left-11"
-            case TASK_PRIORITY.HIGH:
-                return "right-1.5"
-        }
-    }
 
     return (
         <div
@@ -100,7 +57,7 @@ const Task = ({task, tasks, onChangeStatus, onDelete, onEdit, onMove, canManuall
                 <Button btnVariant={BTN_VARIANT.PRIMARY} onClick={() => onEdit(task)}>
                     Edit
                 </Button>
-                <Button btnVariant={BTN_VARIANT.DANGER} onClick={() => onDelete(task)}>
+                <Button btnVariant={BTN_VARIANT.DANGER} onClick={() => onDelete(task.id!)}>
                     Delete
                 </Button>
             </div>

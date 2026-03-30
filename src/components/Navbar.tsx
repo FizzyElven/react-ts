@@ -1,8 +1,7 @@
 import {useLocation} from "react-router";
 import {useContext} from "react";
-import {FireContext} from "../Context.tsx";
-import type {ConfirmDialog} from "../types/types.ts";
-
+import {FireContext} from "../FireContext.tsx";
+import {BTN_VARIANT, type ConfirmDialog} from "../types/types.ts";
 
 function Navbar({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog | null) => void }) {
     const location = useLocation();
@@ -13,7 +12,7 @@ function Navbar({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog 
                 title: "Sign Out",
                 text: "Are you sure you want to sign out?",
                 confirmText: "Sign Out",
-                btnVariant: "danger",
+                btnVariant: BTN_VARIANT.DANGER,
                 onConfirm: () => {
                     logout();
                     setConfirmDialog(null);
@@ -24,7 +23,6 @@ function Navbar({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog 
             }
         )
     }
-    console.log(user)
     return (
         <div className="bg-blue-600 text-white text-3xl font-bold h-20 shadow-sm shadow-black text-shadow-lg">
             <div className="container mx-auto h-full flex items-center justify-between">
@@ -38,8 +36,9 @@ function Navbar({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog 
                          className="w-15 h-15 text-sm rounded-full shadow-sm shadow-black"/>
                         {
                             location.pathname !== "login" &&
-                          <button className="shadow-sm shadow-blue-950 cursor-pointer border border-white p-2.5 rounded-md  hover:bg-blue-500 text-shadow-lg"
-                                  onClick={handleLogout}>
+                          <button
+                            className="shadow-sm shadow-blue-950 cursor-pointer border border-white p-2.5 rounded-md  hover:bg-blue-500 text-shadow-lg"
+                            onClick={handleLogout}>
                             SIGN OUT
                           </button>
                         }

@@ -6,7 +6,7 @@ import InputField from "./ui/InputField.tsx";
 interface TaskEditorProps {
     onCancel: () => void;
     onCreate: (task: TaskData) => Promise<void>
-    onEdit: (task: TaskData, initialTask: TaskData) => Promise<void>;
+    onEdit: (taskId: string, initialTask: TaskData) => Promise<void>;
     initialTask?: TaskData;
 }
 
@@ -16,11 +16,12 @@ function TaskEditor({onCancel, onCreate, onEdit, initialTask}: TaskEditorProps) 
         description: "",
         priority: TASK_PRIORITY.LOW,
         status: TASK_STATUS.IDLE,
+        customOrder: 0,
     });
 
     const handleSubmit = () => {
         if (initialTask) {
-            return onEdit(initialTask, editedTask);
+            return onEdit(initialTask.id!, editedTask);
         } else {
             return onCreate(editedTask)
         }

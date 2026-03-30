@@ -1,9 +1,8 @@
-import {Navigate, Route, Routes, useNavigate} from "react-router";
+import {Navigate, Route, Routes} from "react-router";
 import Navbar from "./components/Navbar.tsx";
 import ProtectedRoutes from "./components/ProtectedRoutes.tsx";
-import {getAuth, GoogleAuthProvider, signInWithPopup, signOut} from "firebase/auth";
-import {firebaseApp, firestoreTaskStore} from "./services/firebase.ts";
-import {FireContext} from "./Context.tsx";
+import {firestoreTaskStore} from "./services/firebase.ts";
+import {FireContext} from "./FireContext.tsx";
 import {useAuth} from "./hooks/Hooks.tsx";
 import Loader from "./components/Loader.tsx";
 import {lazy, useState} from "react";
@@ -17,23 +16,8 @@ const Tasks = lazy(() => import("./components/Tasks.tsx"));
 const taskService = new TaskService(firestoreTaskStore);
 
 function App() {
-    const navigate = useNavigate();
-    const {loading, user} = useAuth()
-    const auth = getAuth(firebaseApp);
+    const {loading, user, login, logout, auth} = useAuth()
     const [confirmAction, setConfirmAction] = useState<ConfirmDialog | null>(null);
-    const login = async () => {
-        const provider = new GoogleAuthProvider();
-        await signInWithPopup(auth, provider)
-        if (auth.currentUser) {
-            navigate("tasks", {replace: true});
-        }
-    }
-    const logout = async () => {
-        await signOut(auth)
-        if (!auth.currentUser) {
-            navigate("login", {replace: true});
-        }
-    }
     if (loading) return <Loader/>
     return (
         <div className="flex flex-col">

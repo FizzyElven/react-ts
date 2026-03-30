@@ -1,0 +1,70 @@
+import {type SortArrayConfig, TASK_PRIORITY, TASK_STATUS, type TaskData} from "../types/types.ts";
+import type {ChangeEvent, ReactNode} from "react";
+import {SORT_DIRECTION, SORT_METHOD} from "../constants/sortConstants.ts";
+
+function Sorting({sortConfig, setSortConfig, children}: {
+    sortConfig: SortArrayConfig<TaskData>
+    setSortConfig: (...params: any[]) => void,
+    children: ReactNode,
+}) {
+    const handleSorting = (event: ChangeEvent<HTMLSelectElement>) => {
+        const logicalOrder = () => {
+            switch (event.target.value) {
+                case "priority":
+                    return Object.values(TASK_PRIORITY)
+                case "status":
+                    return Object.values(TASK_STATUS)
+            }
+        }
+        const sortingMethod = () => {
+            switch (event.target.value) {
+                case "priority":
+                case "status":
+                    return SORT_METHOD.LOGICAL
+                case "createdAt":
+                case "dueDate":
+                case "customOrder":
+                    return SORT_METHOD.NUMERICAL
+                default:
+                    return SORT_METHOD.ALPHABETICAL
+            }
+        }
+        setSortConfig({
+            key: event.target.value as keyof TaskData,
+            direction: SORT_DIRECTION.ASC,
+            sortMethod: sortingMethod(),
+            logicOrder: logicalOrder()
+        })
+    }
+    return (
+        <div className="flex items-center gap-2.5">
+            {children}
+            <div className="group shadow-lg transition shadow-gray-200 hover:border-blue-400
+                    focus-within:border-blue-300 focus-within:shadow-lg border-2 border-blue-600 rounded-full px-2 text-2xl p-2.5 flex gap-2.5">
+                <select
+                    className="outline-none"
+                    name="sort" value={sortConfig.key}
+                    onChange={handleSorting}>
+                    <option value="title">Title</option>
+                    <option value="status">Status</option>
+                    <option value="priority">Priority</option>
+                    <option value="createdAt">Creation time</option>
+                    <option value="customOrder">Custom order</option>
+                </select>
+            </div>
+            <button
+                className="cursor-pointer font-bold border border-blue-500 transition shadow-lg shadow-gray-200 hover:border-blue-400 hover:border-2 w-10 h-10
+                    focus-within:border-blue-300 focus-within:shadow-lg rounded-full px-2 text-2xl p-2.5 flex gap-2.5"
+                onClick={() => setSortConfig((prevState: { direction: string; }) => {
+                    return {
+                        ...prevState,
+                        direction: prevState.direction === SORT_DIRECTION.ASC ? SORT_DIRECTION.DESC : SORT_DIRECTION.ASC,
+                    }
+                })}><p
+                className={"duration-300 transition-transform text-3xl w-full h-full leading-none flex items-center justify-center " + `${sortConfig.direction === SORT_DIRECTION.ASC ? "rotate-180" : "rotate-0"}`}>↓</p>
+            </button>
+        </div>
+    );
+}
+
+export default Sorting;

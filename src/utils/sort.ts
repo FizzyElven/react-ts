@@ -68,3 +68,8 @@ export function moveItem(arr: any[] | null, currentIndex: number, moveTo: "up" |
             }
     }
 }
+
+export function getNextOrder<T extends {customOrder: number}>(arr: T[]): number {
+    if (arr.length === 0) return CUSTOM_SORT_STEP;
+    return Math.max(...arr.map(t => t.customOrder)) + CUSTOM_SORT_STEP
+}

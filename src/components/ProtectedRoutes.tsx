@@ -1,6 +1,6 @@
 import {Navigate, Outlet} from "react-router";
 import {useContext} from "react";
-import {FireContext} from "../Context.tsx";
+import {FireContext} from "../FireContext.tsx";
 
 function ProtectedRoutes() {
     const {auth} = useContext(FireContext);

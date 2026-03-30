@@ -1,6 +1,5 @@
 import {useContext} from "react";
-import {FireContext} from "../Context.tsx";
-
+import {FireContext} from "../FireContext.tsx";
 
 function Login() {
 const {login} = useContext(FireContext)

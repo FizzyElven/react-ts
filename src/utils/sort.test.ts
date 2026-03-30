@@ -1,5 +1,6 @@
 import {expect, test, describe, it} from "vitest";
-import {createLogicOrder, moveItem, sortArray} from "./sort.ts"
+import {createLogicOrder, getNextOrder, moveItem, sortArray} from "./sort.ts"
+import {CUSTOM_SORT_STEP} from "../constants/sortConstants.ts";
 //must take array of strings and return object where elements of array are properties and their indexes are their values
 test("CreateLogicOrder", () => {
     expect(createLogicOrder(["a", "b", "c"])).toEqual({
@@ -89,5 +90,14 @@ describe("moveItem", () => {
     })
     it("moving second element on the first place in asc order need it to have customOrder 250", () => {
         expect(moveItem([{customOrder: 200}, {customOrder: 100}], 1, "up", "desc")).toBe(250)
+    })
+})
+
+describe("getNextOrder", () => {
+    it("returns CUSTOM_SORT_STEP", () => {
+        expect(getNextOrder([])).toBe(CUSTOM_SORT_STEP)
+    })
+    it("returns max order + CUSTOM_SORT_STEP", () => {
+        expect(getNextOrder<{id: number, customOrder: number}>([{id: 1, customOrder: 200}, {id: 2, customOrder: 400}])).toBe(500)
     })
 })

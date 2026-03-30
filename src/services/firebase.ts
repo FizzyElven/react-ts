@@ -1,6 +1,7 @@
 import {initializeApp} from "firebase/app";
 import {getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, type Firestore} from "firebase/firestore";
 import type {TaskData, TaskStore} from "../types/types.ts";
+
 const USERS_COLLECTION = "users";
 const TASK_COLLECTION = "tasks";
 const firebaseConfig = {
@@ -16,12 +17,15 @@ const db = getFirestore(firebaseApp);
 
 export class FirestoreTaskStore implements TaskStore {
     private readonly db: Firestore;
+
     constructor(db: Firestore) {
         this.db = db;
     }
+
     async add(userId: string, taskData: TaskData): Promise<void> {
         await addDoc(collection(this.db, USERS_COLLECTION, userId, TASK_COLLECTION), taskData);
     }
+
     async getAll(userId: string): Promise<TaskData[]> {
         const querySnapshot = await getDocs(
             collection(this.db, USERS_COLLECTION, userId, TASK_COLLECTION)
@@ -32,9 +36,11 @@ export class FirestoreTaskStore implements TaskStore {
             ...snapshot.data(),
         })) as TaskData[];
     }
+
     async delete(userId: string, taskId: string): Promise<void> {
         await deleteDoc(doc(this.db, USERS_COLLECTION, userId, TASK_COLLECTION, taskId));
     }
+
     async update(
         userId: string,
         taskId: string,
@@ -46,4 +52,5 @@ export class FirestoreTaskStore implements TaskStore {
         );
     }
 }
+
 export const firestoreTaskStore = new FirestoreTaskStore(db)

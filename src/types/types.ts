@@ -32,7 +32,7 @@ export interface TaskData {
     description: string;
     priority: taskPriority;
     status: taskStatus;
-    customOrder?: number;
+    customOrder: number;
 }
 
 export interface ConfirmDialog {
