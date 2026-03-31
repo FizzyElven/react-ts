@@ -1,7 +1,7 @@
 import {getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, type User} from "firebase/auth";
 import {useCallback, useEffect, useMemo, useState} from "react";
-import type {FilterConfig, SortArrayConfig, TaskData} from "../types/types.ts";
-import {getNextOrder, sortArray} from "../utils/sort.ts";
+import {type FilterConfig, FILTERS, type FilterType, type SortArrayConfig, type TaskData} from "../types/types.ts";
+import {getNextOrder, moveItem, sortArray} from "../utils/sort.ts";
 import type {TaskService} from "../services/TaskService.ts";
 import {filterArray} from "../utils/filter.ts";
 import {searchInArray} from "../utils/search.ts";
@@ -53,6 +53,7 @@ interface UseTasksProps {
 export const useTasks = ({user, taskService, filtersConfig, search, sortConfig}: UseTasksProps) => {
     const [tasks, setTasks] = useState<TaskData[]>([]);
     const [isEditorOpen, setIsEditorOpen] = useState(false);
+    const [editTask, setEditTask] = useState<TaskData | undefined>(undefined);
     const [isLoading, setIsLoading] = useState(false);
     const fetchTasks = useCallback(
         async () => {
@@ -87,6 +88,11 @@ export const useTasks = ({user, taskService, filtersConfig, search, sortConfig}:
         await fetchTasks();
         setIsEditorOpen(false);
     };
+    async function moveTask(task: TaskData, index: number, moveTo: "up" | "down") {
+        const newOrder = moveItem(processedTasks, index, moveTo, sortConfig.direction)
+        if (!newOrder) return
+        await updateTask(task.id!, {...task, customOrder: newOrder})
+    }
     const processedTasks = useMemo(() => {
         if (tasks && filtersConfig.length > 0) {
             const filteredTasks = filterArray(tasks, filtersConfig)
@@ -104,6 +110,14 @@ export const useTasks = ({user, taskService, filtersConfig, search, sortConfig}:
         }
         return null
     }, [tasks, filtersConfig, sortConfig, search]);
+    const handleCreateTask = () => {
+        setEditTask(undefined)
+        setIsEditorOpen(true);
+    }
+    const handleEditTask = (task: TaskData) => {
+        setEditTask(task);
+        setIsEditorOpen(true);
+    }
     return {
         tasks,
         isLoading,
@@ -113,6 +127,32 @@ export const useTasks = ({user, taskService, filtersConfig, search, sortConfig}:
         addTask,
         deleteTask,
         updateTask,
+        moveTask,
         processedTasks,
+        handleCreateTask,
+        handleEditTask,
+        editTask,
     };
+}
+
+export const useFilters = () => {
+    const [filtersConfig, setFiltersConfig] = useState<FilterConfig<TaskData>[]>([]);
+    function addFilter(field: FilterType, value: string) {
+        if (field === FILTERS.OTHER) {
+            setFiltersConfig([
+                ...filtersConfig,
+                {
+                    field,
+                    value,
+                },
+            ])
+        }
+        const arr = filtersConfig.filter(el => el.field !== field)
+        setFiltersConfig([...arr, {field, value}])
+    }
+
+    function removeFilter(field: keyof TaskData, value: any) {
+        setFiltersConfig(filtersConfig.filter(el => el.field !== field && el.value !== value));
+    }
+    return {removeFilter, addFilter, filtersConfig, setFiltersConfig};
 }

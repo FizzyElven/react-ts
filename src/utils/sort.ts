@@ -1,4 +1,4 @@
-import type {SortArrayConfig} from "../types/types.ts";
+import {type SortArrayConfig, TASK_PRIORITY, TASK_STATUS} from "../types/types.ts";
 import {CUSTOM_SORT_STEP, SORT_DIRECTION, SORT_METHOD, type sortDirection} from "../constants/sortConstants.ts";
 
 export function sortArray<T>(array: T[], sortOptions: SortArrayConfig<T>) {
@@ -72,4 +72,29 @@ export function moveItem(arr: any[] | null, currentIndex: number, moveTo: "up" |
 export function getNextOrder<T extends {customOrder: number}>(arr: T[]): number {
     if (arr.length === 0) return CUSTOM_SORT_STEP;
     return Math.max(...arr.map(t => t.customOrder)) + CUSTOM_SORT_STEP
+}
+
+export function getLogicalOrder(value: string) {
+    switch (value) {
+        case "priority":
+            return Object.values(TASK_PRIORITY)
+        case "status":
+            return Object.values(TASK_STATUS)
+        default:
+            break;
+    }
+}
+
+export function getSortingMethod(value: string) {
+    switch (value) {
+        case "priority":
+        case "status":
+            return SORT_METHOD.LOGICAL
+        case "createdAt":
+        case "dueDate":
+        case "customOrder":
+            return SORT_METHOD.NUMERICAL
+        default:
+            return SORT_METHOD.ALPHABETICAL
+    }
 }

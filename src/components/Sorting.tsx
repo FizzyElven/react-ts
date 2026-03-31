@@ -1,6 +1,7 @@
-import {type SortArrayConfig, TASK_PRIORITY, TASK_STATUS, type TaskData} from "../types/types.ts";
+import {type SortArrayConfig, type TaskData} from "../types/types.ts";
 import type {ChangeEvent, ReactNode} from "react";
-import {SORT_DIRECTION, SORT_METHOD} from "../constants/sortConstants.ts";
+import {SORT_DIRECTION} from "../constants/sortConstants.ts";
+import {getLogicalOrder, getSortingMethod} from "../utils/sort.ts";
 
 function Sorting({sortConfig, setSortConfig, children}: {
     sortConfig: SortArrayConfig<TaskData>
@@ -8,32 +9,11 @@ function Sorting({sortConfig, setSortConfig, children}: {
     children: ReactNode,
 }) {
     const handleSorting = (event: ChangeEvent<HTMLSelectElement>) => {
-        const logicalOrder = () => {
-            switch (event.target.value) {
-                case "priority":
-                    return Object.values(TASK_PRIORITY)
-                case "status":
-                    return Object.values(TASK_STATUS)
-            }
-        }
-        const sortingMethod = () => {
-            switch (event.target.value) {
-                case "priority":
-                case "status":
-                    return SORT_METHOD.LOGICAL
-                case "createdAt":
-                case "dueDate":
-                case "customOrder":
-                    return SORT_METHOD.NUMERICAL
-                default:
-                    return SORT_METHOD.ALPHABETICAL
-            }
-        }
         setSortConfig({
             key: event.target.value as keyof TaskData,
             direction: SORT_DIRECTION.ASC,
-            sortMethod: sortingMethod(),
-            logicOrder: logicalOrder()
+            sortMethod: getSortingMethod(event.target.value),
+            logicOrder: getLogicalOrder(event.target.value),
         })
     }
     return (

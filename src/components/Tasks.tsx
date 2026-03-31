@@ -4,19 +4,18 @@ import {
     BTN_VARIANT,
     type ConfirmDialog,
     type SortArrayConfig,
-    type TaskData, type FilterConfig
+    type TaskData
 } from "../types/types.ts";
 import Task from "./Task.tsx";
 import Modal from "./Modal.tsx";
 import TaskEditor from "./TaskEditor.tsx";
-import {moveItem} from "../utils/sort.ts";
 import {useNavigate} from "react-router";
 import {SORT_DIRECTION, SORT_METHOD} from "../constants/sortConstants.ts";
 import Filters from "./Filters.tsx";
 import Button from "./ui/Button.tsx";
 import InputField from "./ui/InputField.tsx";
 import Sorting from "./Sorting.tsx";
-import {useTasks} from "../hooks/Hooks.tsx";
+import {useFilters, useTasks} from "../hooks/Hooks.tsx";
 
 function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog | null) => void }) {
     const {user, taskService} = useContext(FireContext)
@@ -25,34 +24,29 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
         navigate("/login", {replace: true});
         return
     }
-    const [editTask, setEditTask] = useState<TaskData | undefined>(undefined);
-    const [filtersConfig, setFiltersConfig] = useState<FilterConfig<TaskData>[]>([]);
     const [search, setSearch] = useState<string>("");
     const [sortConfig, setSortConfig] = useState<SortArrayConfig<TaskData>>({
         key: "id",
         direction: SORT_DIRECTION.ASC,
         sortMethod: SORT_METHOD.ALPHABETICAL,
     });
+    const {filtersConfig, setFiltersConfig, removeFilter, addFilter} = useFilters()
     const {
         processedTasks,
         addTask,
         fetchTasks,
         deleteTask,
         updateTask,
+        moveTask,
         isLoading,
         setIsEditorOpen,
-        isEditorOpen
+        isEditorOpen,
+        handleEditTask,
+        handleCreateTask,
+        editTask,
     } = useTasks({user, taskService, search, sortConfig, filtersConfig});
 
-    const handleCreate = () => {
-        setEditTask(undefined)
-        setIsEditorOpen(true);
-    }
-    const handleEdit = (task: TaskData) => {
-        setEditTask(task);
-        setIsEditorOpen(true);
-    }
-    const confirmDelete = (taskId: string) => {
+    const confirmDeleteTask = (taskId: string) => {
         setConfirmDialog(
             {
                 title: "Delete Task",
@@ -69,20 +63,14 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
         )
     }
 
-    async function moveTaskHandler(task: TaskData, index: number, moveTo: "up" | "down") {
-        setSortConfig({...sortConfig, key: "customOrder", sortMethod: SORT_METHOD.NUMERICAL})
-        const newOrder = moveItem(processedTasks, index, moveTo, sortConfig.direction)
-        if (!newOrder) return
-        await updateTask(task.id!, {...task, customOrder: newOrder})
-    }
-
     return (
         <div className="container mx-auto mt-5 flex flex-col items-center gap-5">
             <div className="flex justify-around items-center w-full">
-                <Button btnVariant={BTN_VARIANT.PRIMARY} onClick={handleCreate}>CREATE NEW TASK</Button>
+                <Button btnVariant={BTN_VARIANT.PRIMARY} onClick={handleCreateTask}>CREATE NEW TASK</Button>
                 <Button btnVariant={BTN_VARIANT.PRIMARY} onClick={fetchTasks}>GET TASKS</Button>
             </div>
-            <Filters setFiltersConfig={setFiltersConfig} filtersConfig={filtersConfig}/>
+            <Filters setFiltersConfig={setFiltersConfig} filtersConfig={filtersConfig} addFilter={addFilter}
+                     removeFilter={removeFilter}/>
             <Sorting sortConfig={sortConfig} setSortConfig={setSortConfig}>
                 <InputField onChange={event => setSearch(event.target.value)} placeholder="Search Tasks">🔍</InputField>
             </Sorting>
@@ -92,8 +80,8 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
                 <div className="flex gap-5 flex-wrap items-start w-full justify-center">
                     {processedTasks.map((task) => (
                         <Task canManuallySort={sortConfig.key === "customOrder"} task={task} tasks={processedTasks}
-                              onChangeStatus={(task) => updateTask(task.id!, task)} onDelete={confirmDelete}
-                              onEdit={handleEdit} key={task.id} onMove={moveTaskHandler}/>
+                              onChangeStatus={(task) => updateTask(task.id!, task)} onDelete={confirmDeleteTask}
+                              onEdit={handleEditTask} key={task.id} onMove={moveTask}/>
                     ))}
                 </div> : <div className="mt-36 flex flex-col items-center text-2xl">You currently have no tasks</div>}
             {isEditorOpen && <Modal isOpen={isEditorOpen} onClose={() => setIsEditorOpen(false)}>

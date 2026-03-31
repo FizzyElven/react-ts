@@ -16,29 +16,15 @@ const filtersArray = [{
     options: ["dueDate"]
 }];
 
-function Filters({setFiltersConfig, filtersConfig}: {
-    setFiltersConfig: (...params: any[]) => void,
-    filtersConfig: FilterConfig<TaskData>[]
-}) {
+interface Props {
+    setFiltersConfig: (...params: any[]) => void;
+    filtersConfig: FilterConfig<TaskData>[];
+    addFilter: (field: FilterType, value: string) => void;
+    removeFilter: (field: keyof TaskData, value: any) => void;
+}
+
+function Filters({setFiltersConfig, filtersConfig, addFilter, removeFilter}: Props) {
     const [dropDownOpen, setDropDownOpen] = useState<FilterType | null>(null);
-
-    function addFilter(field: FilterType, value: string) {
-        if (field === FILTERS.OTHER) {
-            setFiltersConfig([
-                ...filtersConfig,
-                {
-                    field,
-                    value,
-                },
-            ])
-        }
-        const arr = filtersConfig.filter(el => el.field !== field)
-        setFiltersConfig([...arr, {field, value}])
-    }
-
-    function removeFilter(field: keyof TaskData, value: any) {
-        setFiltersConfig(filtersConfig.filter(el => el.field !== field && el.value !== value));
-    }
 
     return (
         <>

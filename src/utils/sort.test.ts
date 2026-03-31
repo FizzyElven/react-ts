@@ -1,6 +1,7 @@
 import {expect, test, describe, it} from "vitest";
-import {createLogicOrder, getNextOrder, moveItem, sortArray} from "./sort.ts"
-import {CUSTOM_SORT_STEP} from "../constants/sortConstants.ts";
+import {createLogicOrder, getLogicalOrder, getNextOrder, getSortingMethod, moveItem, sortArray} from "./sort.ts"
+import {CUSTOM_SORT_STEP, SORT_METHOD} from "../constants/sortConstants.ts";
+import {TASK_PRIORITY, TASK_STATUS} from "../types/types.ts";
 //must take array of strings and return object where elements of array are properties and their indexes are their values
 test("CreateLogicOrder", () => {
     expect(createLogicOrder(["a", "b", "c"])).toEqual({
@@ -98,6 +99,34 @@ describe("getNextOrder", () => {
         expect(getNextOrder([])).toBe(CUSTOM_SORT_STEP)
     })
     it("returns max order + CUSTOM_SORT_STEP", () => {
-        expect(getNextOrder<{id: number, customOrder: number}>([{id: 1, customOrder: 200}, {id: 2, customOrder: 400}])).toBe(500)
+        expect(getNextOrder<{ id: number, customOrder: number }>([{id: 1, customOrder: 200}, {
+            id: 2,
+            customOrder: 400
+        }])).toBe(500)
+    })
+})
+describe("getLogicalOrder()", () => {
+    it("should return Object.values(TASK_PRIORITY)", () => {
+        expect(getLogicalOrder("priority")).toEqual(Object.values(TASK_PRIORITY))
+    })
+    it("should return Object.values(TASK_STATUS)", () => {
+        expect(getLogicalOrder("status")).toEqual(Object.values(TASK_STATUS))
+    })
+    it("should return undefined", () => {
+        expect(getLogicalOrder("id")).toBe(undefined)
+    })
+})
+describe("getSortingMethod()", () => {
+    it("should return SORT_METHOD.LOGICAL", () => {
+        expect(getSortingMethod("priority")).toBe(SORT_METHOD.LOGICAL)
+        expect(getSortingMethod("status")).toBe(SORT_METHOD.LOGICAL)
+    })
+    it("should return SORT_METHOD.NUMERICAL", () => {
+        expect(getSortingMethod("createdAt")).toBe(SORT_METHOD.NUMERICAL)
+        expect(getSortingMethod("dueDate")).toBe(SORT_METHOD.NUMERICAL)
+        expect(getSortingMethod("customOrder")).toBe(SORT_METHOD.NUMERICAL)
+    })
+    it("should return SORT_METHOD.ALPHABETICAL", () => {
+        expect(getSortingMethod("id")).toBe(SORT_METHOD.ALPHABETICAL)
     })
 })
