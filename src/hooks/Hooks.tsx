@@ -1,6 +1,13 @@
 import {getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, type User} from "firebase/auth";
 import {useCallback, useEffect, useMemo, useState} from "react";
-import {type FilterConfig, FILTERS, type FilterType, type SortArrayConfig, type TaskData} from "../types/types.ts";
+import {
+    type FilterConfig,
+    FILTERS,
+    type FilterType,
+    type SortArrayConfig,
+    TASK_PRIORITY, TASK_STATUS,
+    type TaskData
+} from "../types/types.ts";
 import {getNextOrder, moveItem, sortArray} from "../utils/sort.ts";
 import type {TaskService} from "../services/TaskService.ts";
 import {filterArray} from "../utils/filter.ts";
@@ -155,4 +162,32 @@ export const useFilters = () => {
         setFiltersConfig(filtersConfig.filter(el => el.field !== field && el.value !== value));
     }
     return {removeFilter, addFilter, filtersConfig, setFiltersConfig};
+}
+
+export const useTaskEditor = (initialTask: TaskData | undefined) => {
+    const [editedTask, setEditedTask] = useState<TaskData>(initialTask ? initialTask : {
+        title: "",
+        description: "",
+        priority: TASK_PRIORITY.LOW,
+        status: TASK_STATUS.IDLE,
+        customOrder: 0,
+    });
+    function updateField(field: keyof TaskData, value: any) {
+        setEditedTask(task => ({
+            ...task,
+            [field]: value
+        }))
+    }
+
+    function toggleOptionalProps(prop: keyof TaskData, value?: any) {
+        if (editedTask.hasOwnProperty(prop)) {
+            delete editedTask[prop];
+            setEditedTask({...editedTask});
+            return;
+        } else {
+            setEditedTask({...editedTask, [prop]: value});
+            return;
+        }
+    }
+    return {updateField, toggleOptionalProps, editedTask}
 }
