@@ -1,15 +1,15 @@
 import {useContext, useState} from "react";
 import {FireContext} from "../FireContext.tsx";
 import {BTN_VARIANT, type SortArrayConfig, type TaskData} from "../types/types.ts";
-import Task from "./Task.tsx";
-import Modal from "./Modal.tsx";
-import TaskEditor from "./TaskEditor.tsx";
+import Task from "../components/Task.tsx";
+import Modal from "../components/Modal.tsx";
+import TaskEditor from "../components/TaskEditor.tsx";
 import {useNavigate} from "react-router";
 import {SORT_DIRECTION, SORT_METHOD} from "../constants/sortConstants.ts";
-import Filters from "./Filters.tsx";
-import Button from "./ui/Button.tsx";
-import InputField from "./ui/InputField.tsx";
-import Sorting from "./Sorting.tsx";
+import Filters from "../components/Filters.tsx";
+import Button from "../components/ui/Button.tsx";
+import InputField from "../components/ui/InputField.tsx";
+import Sorting from "../components/Sorting.tsx";
 import {useFilters, useTasks} from "../hooks/Hooks.tsx";
 import {useConfirm} from "../ConfirmContext.tsx";
 

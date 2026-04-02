@@ -9,8 +9,8 @@ import {lazy} from "react";
 import {TaskService} from "./services/TaskService.ts";
 import {ConfirmProvider} from "./ConfirmContext.tsx";
 
-const Login = lazy(() => import("./components/Login"));
-const Tasks = lazy(() => import("./components/Tasks.tsx"));
+const Login = lazy(() => import("./pages/Login"));
+const Tasks = lazy(() => import("./pages/Tasks.tsx"));
 const taskService = new TaskService(firestoreTaskStore);
 
 function App() {
@@ -18,15 +18,7 @@ function App() {
     if (loading) return <Loader/>
     return (
         <div className="flex flex-col">
-            <FireContext.Provider value={
-                {
-                    auth,
-                    user,
-                    login,
-                    logout,
-                    taskService,
-                }
-            }>
+            <FireContext.Provider value={{auth, user, login, logout, taskService}}>
                 <ConfirmProvider>
                     <Navbar/>
                     <Routes>
