@@ -21,7 +21,6 @@ export const useAuth = () => {
     const navigate = useNavigate();
     const auth = getAuth(firebaseApp);
     const login = async () => {
-
         const provider = new GoogleAuthProvider();
         await signInWithPopup(auth, provider)
         if (auth.currentUser) {

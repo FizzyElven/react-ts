@@ -6,7 +6,7 @@ interface FirebaseProps {
     auth: Auth,
     user: User | null,
     login: () => void,
-    logout: () => void,
+    logout: () => Promise<void>,
     taskService: TaskService,
 }
 

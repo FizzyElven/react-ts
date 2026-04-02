@@ -1,11 +1,6 @@
 import {useContext, useState} from "react";
 import {FireContext} from "../FireContext.tsx";
-import {
-    BTN_VARIANT,
-    type ConfirmDialog,
-    type SortArrayConfig,
-    type TaskData
-} from "../types/types.ts";
+import {BTN_VARIANT, type SortArrayConfig, type TaskData} from "../types/types.ts";
 import Task from "./Task.tsx";
 import Modal from "./Modal.tsx";
 import TaskEditor from "./TaskEditor.tsx";
@@ -16,8 +11,9 @@ import Button from "./ui/Button.tsx";
 import InputField from "./ui/InputField.tsx";
 import Sorting from "./Sorting.tsx";
 import {useFilters, useTasks} from "../hooks/Hooks.tsx";
+import {useConfirm} from "../ConfirmContext.tsx";
 
-function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog | null) => void }) {
+function Tasks() {
     const {user, taskService} = useContext(FireContext)
     const navigate = useNavigate();
     if (!user) {
@@ -45,20 +41,15 @@ function Tasks({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog |
         handleCreateTask,
         editTask,
     } = useTasks({user, taskService, search, sortConfig, filtersConfig});
-
+    const confirm = useConfirm()
     const confirmDeleteTask = (taskId: string) => {
-        setConfirmDialog(
+        confirm(
             {
                 title: "Delete Task",
                 text: "Are you sure you want to delete this task?",
                 confirmText: "Delete",
                 btnVariant: BTN_VARIANT.DANGER,
-                onConfirm: () => {
-                    deleteTask(taskId).then(() => setConfirmDialog(null));
-                },
-                onCancel: () => {
-                    setConfirmDialog(null)
-                }
+                onConfirm: () => deleteTask(taskId),
             }
         )
     }

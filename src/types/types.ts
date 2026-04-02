@@ -35,13 +35,12 @@ export interface TaskData {
     customOrder: number;
 }
 
-export interface ConfirmDialog {
+export interface ConfirmOptions {
     title: string,
     text: string,
     btnVariant: btnVariant,
     confirmText: string,
-    onConfirm: () => void
-    onCancel: () => void
+    onConfirm: () => Promise<void>
 }
 
 export interface SortArrayConfig<T, K extends keyof T = keyof T> {

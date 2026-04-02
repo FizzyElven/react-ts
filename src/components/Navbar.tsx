@@ -1,25 +1,21 @@
 import {useLocation} from "react-router";
 import {useContext} from "react";
 import {FireContext} from "../FireContext.tsx";
-import {BTN_VARIANT, type ConfirmDialog} from "../types/types.ts";
+import {BTN_VARIANT} from "../types/types.ts";
+import {useConfirm} from "../ConfirmContext.tsx";
 
-function Navbar({setConfirmDialog}: { setConfirmDialog: (actions: ConfirmDialog | null) => void }) {
+function Navbar() {
     const location = useLocation();
+    const confirm = useConfirm();
     const {logout, user} = useContext(FireContext)
     const handleLogout = () => {
-        setConfirmDialog(
+        confirm(
             {
                 title: "Sign Out",
                 text: "Are you sure you want to sign out?",
                 confirmText: "Sign Out",
                 btnVariant: BTN_VARIANT.DANGER,
-                onConfirm: () => {
-                    logout();
-                    setConfirmDialog(null);
-                },
-                onCancel: () => {
-                    setConfirmDialog(null)
-                }
+                onConfirm: () => logout(),
             }
         )
     }
