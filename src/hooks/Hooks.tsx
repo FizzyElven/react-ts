@@ -14,6 +14,7 @@ import {filterArray} from "../utils/filter.ts";
 import {searchInArray} from "../utils/search.ts";
 import {firebaseApp} from "../services/firebase.ts";
 import {useNavigate} from "react-router";
+import {getTaskStatus} from "../utils/taskHelpers.ts";
 
 export const useAuth = () => {
     const [user, setUser] = useState<User | null>(null);
@@ -67,7 +68,8 @@ export const useTasks = ({user, taskService, filtersConfig, search, sortConfig}:
             setIsLoading(true);
             try {
                 const data = await taskService.getUserTasks(user.uid);
-                setTasks(data || []);
+                const processedData = data.map(task => getTaskStatus(task))
+                setTasks(processedData || []);
             } finally {
                 setIsLoading(false);
             }

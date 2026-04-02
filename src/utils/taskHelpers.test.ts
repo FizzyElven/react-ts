@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 import {TASK_PRIORITY, TASK_STATUS} from "../types/types.ts";
-import {getBorderColor, getPriorityBar, getStatusEmoji} from "./taskHelpers.ts";
+import {getBorderColor, getPriorityBar, getStatusEmoji, getTaskStatus} from "./taskHelpers.ts";
 
 describe("getBorderColor()", () => {
     it("should return border-grey-600", () => {
@@ -40,5 +40,53 @@ describe("getPriorityBar()", () => {
     })
     it("should return right-1.5", () => {
         expect(getPriorityBar(TASK_PRIORITY.HIGH)).toBe("right-1.5")
+    })
+})
+describe("getTaskStatus()", () => {
+    it("should return provided task", () => {
+        const sampleTask = {
+            status: TASK_STATUS.IDLE,
+            id: "123",
+            customOrder: 0,
+            priority: TASK_PRIORITY.LOW,
+            description: "sample",
+            title: "sample"
+        }
+        expect(getTaskStatus(sampleTask)).toEqual(sampleTask)
+    })
+    it("should return provided task", () => {
+        const sampleTask = {
+            status: TASK_STATUS.OVERDUE,
+            id: "123",
+            customOrder: 0,
+            priority: TASK_PRIORITY.LOW,
+            description: "sample",
+            title: "sample"
+        }
+        expect(getTaskStatus(sampleTask)).toEqual(sampleTask)
+    })
+    it("should return provided task", () => {
+        const sampleTask = {
+            status: TASK_STATUS.IDLE,
+            id: "123",
+            customOrder: 0,
+            priority: TASK_PRIORITY.LOW,
+            description: "sample",
+            title: "sample",
+            dueDate: Date.now(),
+        }
+        expect(getTaskStatus(sampleTask)).toEqual(sampleTask)
+    })
+    it("should return provided task", () => {
+        const sampleTask = {
+            status: TASK_STATUS.IDLE,
+            id: "123",
+            customOrder: 0,
+            priority: TASK_PRIORITY.LOW,
+            description: "sample",
+            title: "sample",
+            dueDate: Date.now()-1,
+        }
+        expect(getTaskStatus(sampleTask)).toEqual({...sampleTask, status: TASK_STATUS.OVERDUE})
     })
 })

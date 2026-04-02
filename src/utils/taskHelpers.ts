@@ -1,4 +1,4 @@
-import {TASK_PRIORITY, TASK_STATUS, type taskPriority, type taskStatus} from "../types/types.ts";
+import {TASK_PRIORITY, TASK_STATUS, type TaskData, type taskPriority, type taskStatus} from "../types/types.ts";
 
 export function getBorderColor(status: taskStatus) {
     switch (status) {
@@ -35,4 +35,11 @@ export function getPriorityBar(priority: taskPriority) {
         case TASK_PRIORITY.HIGH:
             return "right-1.5"
     }
+}
+
+export function getTaskStatus(task: TaskData) {
+    if (task.dueDate && task.status !== TASK_STATUS.OVERDUE && task.dueDate < Date.now()) {
+        return {...task, status: TASK_STATUS.OVERDUE}
+    }
+    return task;
 }
