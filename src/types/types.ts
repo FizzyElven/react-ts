@@ -18,14 +18,19 @@ export const TASK_STATUS = {
 export type btnVariant = (typeof BTN_VARIANT)[keyof typeof BTN_VARIANT]
 export type taskPriority = (typeof TASK_PRIORITY)[keyof typeof TASK_PRIORITY]
 export type taskStatus = (typeof TASK_STATUS)[keyof typeof TASK_STATUS]
+
 export interface TaskStore {
     add(userId: string, taskData: TaskData): Promise<void>
+
     getAll(userId: string): Promise<TaskData[]>
+
     delete(userId: string, taskId: string): Promise<void>
+
     update(userId: string, taskId: string, taskData: Partial<TaskData>): Promise<void>
 }
+
 export interface TaskData {
-    id?: string;
+    id: string;
     createdAt?: number;
     dueDate?: number;
     title: string;
@@ -49,10 +54,12 @@ export interface SortArrayConfig<T, K extends keyof T = keyof T> {
     sortMethod: SortMethod;
     logicOrder?: string[] | null;
 }
-export interface FilterConfig <T>{
+
+export interface FilterConfig<T> {
     field?: keyof T | "other",
     value?: any | any[]
 }
+
 export const FILTERS = {
     STATUS: "status",
     PRIORITY: "priority",

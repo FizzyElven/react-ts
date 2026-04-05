@@ -1,6 +1,9 @@
 import {BTN_VARIANT, TASK_STATUS, type TaskData} from "../types/types.ts";
 import Button from "./ui/Button.tsx";
 import {getBorderColor, getPriorityBar, getStatusEmoji} from "../utils/taskHelpers.ts";
+import {useSortable} from '@dnd-kit/sortable';
+import {CSS} from '@dnd-kit/utilities';
+import {memo, useEffect} from 'react';
 
 interface Props {
     task: TaskData,
@@ -8,16 +11,35 @@ interface Props {
     onChangeStatus: (task: TaskData) => void,
     onDelete: (taskId: string) => void,
     onEdit: (task: TaskData) => void,
-    onMove: (task: TaskData, index: number, direction: "up" | "down") => void,
+    onMove: (task: TaskData, direction?: "up" | "down") => void,
     canManuallySort: boolean,
 }
 
 const Task = ({task, tasks, onChangeStatus, onDelete, onEdit, onMove, canManuallySort}: Props) => {
     if (!tasks) return
+    useEffect(() => {
+        console.log("task rendered ", task.id)
+        console.log(task)
+    }, [task]);
+
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({id: task.id!, disabled: !canManuallySort});
+    const style = {
+        transform: CSS.Translate.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+        zIndex: isDragging ? 100 : 1,
+    };
 
     return (
-        <div
-            className={"relative shadow-lg shadow-gray-200 flex items-start flex-col gap-2.5 border w-1/4 text-2xl p-2.5 rounded-3xl" + ` ${getBorderColor(task.status)}`}>
+        <div id={task.id} ref={setNodeRef} style={style}
+             className={"relative shadow-lg shadow-gray-200 flex items-start flex-col gap-2.5 border text-2xl p-2.5 rounded-3xl" + ` ${getBorderColor(task.status)}`}>
             <div className="w-full">
                 <div className="flex items-center justify-between w-full">
                     <p className="font-bold">{task.title}</p>
@@ -40,41 +62,49 @@ const Task = ({task, tasks, onChangeStatus, onDelete, onEdit, onMove, canManuall
                 </div>
                 {task.dueDate && <p className="text-sm">Target Date: {new Date(task.dueDate).toLocaleString()}</p>}
             </div>
-
             <hr className="w-full"/>
-            <p>{task.description}</p>
-            <div className="flex justify-between w-full">
-                {task.status === TASK_STATUS.ACTIVE &&
-                  <Button btnVariant={BTN_VARIANT.PRIMARY}
-                          onClick={() => onChangeStatus({...task, status: TASK_STATUS.COMPLETED})}>
-                    Complete
-                  </Button>}
-                {task.status === TASK_STATUS.IDLE &&
-                  <Button btnVariant={BTN_VARIANT.PRIMARY}
-                          onClick={() => onChangeStatus({...task, status: TASK_STATUS.ACTIVE})}>
-                    Start
-                  </Button>}
-                <Button btnVariant={BTN_VARIANT.PRIMARY} onClick={() => onEdit(task)}>
-                    Edit
-                </Button>
-                <Button btnVariant={BTN_VARIANT.DANGER} onClick={() => onDelete(task.id!)}>
-                    Delete
-                </Button>
+            <div className="flex flex-col h-full w-full justify-between gap-2.5">
+                <p>{task.description}</p>
+                <div className="flex flex-col gap-2.5">
+                    {canManuallySort && <div className="flex justify-between w-full">
+                      <div className="flex gap-2.5">
+                        <button disabled={!canManuallySort}
+                                onClick={() => onMove(task, "up")}
+                                className="flex items-center justify-center hover:border-blue-400 focus-within:border-blue-300 transition hover:bg-gray-50 shadow-lg shadow-gray-200 border-2 text-2xl border-blue-600 px-2.5 rounded-full w-10 h-10 cursor-pointer">
+                          ↑
+                        </button>
+                        <button disabled={!canManuallySort}
+                                onClick={() => onMove(task, "down")}
+                                className="flex items-center justify-center hover:border-blue-400 focus-within:border-blue-300 transition hover:bg-gray-50 shadow-lg shadow-gray-200 border-2 text-2xl border-blue-600 px-2.5 rounded-full w-10 h-10 cursor-pointer">
+                          ↓
+                        </button>
+                      </div>
+                      <button
+                        className="drag-handle p-5 rounded-xl w-3 h-6 cursor-grab" {...attributes} {...listeners}/>
+                    </div>
+                    }
+                    <div className="flex justify-between w-full">
+                        {task.status === TASK_STATUS.ACTIVE &&
+                          <Button btnVariant={BTN_VARIANT.PRIMARY}
+                                  onClick={() => onChangeStatus({...task, status: TASK_STATUS.COMPLETED})}>
+                            Complete
+                          </Button>}
+                        {task.status === TASK_STATUS.IDLE &&
+                          <Button btnVariant={BTN_VARIANT.PRIMARY}
+                                  onClick={() => onChangeStatus({...task, status: TASK_STATUS.ACTIVE})}>
+                            Start
+                          </Button>}
+                        <Button btnVariant={BTN_VARIANT.PRIMARY} onClick={() => onEdit(task)}>
+                            Edit
+                        </Button>
+                        <Button btnVariant={BTN_VARIANT.DANGER} onClick={() => onDelete(task.id!)}>
+                            Delete
+                        </Button>
+                    </div>
+                </div>
             </div>
-            {canManuallySort && <div className="flex gap-2.5">
-              <button disabled={!canManuallySort}
-                      onClick={() => onMove(task, tasks.findIndex(t => t.id === task.id), "up")}
-                      className="flex items-center justify-center hover:border-blue-400 focus-within:border-blue-300 transition hover:bg-gray-50 shadow-lg shadow-gray-200 border-2 text-2xl border-blue-600 px-2.5 rounded-full w-10 h-10 cursor-pointer">
-                ↑
-              </button>
-              <button disabled={!canManuallySort}
-                      onClick={() => onMove(task, tasks.findIndex(t => t.id === task.id), "down")}
-                      className="flex items-center justify-center hover:border-blue-400 focus-within:border-blue-300 transition hover:bg-gray-50 shadow-lg shadow-gray-200 border-2 text-2xl border-blue-600 px-2.5 rounded-full w-10 h-10 cursor-pointer">
-                ↓
-              </button>
-            </div>}
         </div>
     );
 };
 
-export default Task;
+export const SortableTaskItem = memo(Task);

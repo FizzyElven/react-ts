@@ -37,13 +37,21 @@ export function createLogicOrder(order: string[]): Record<string, number> {
     }, {} as Record<string, number>)
 }
 
-export function moveItem(arr: any[] | null, currentIndex: number, moveTo: "up" | "down", direction: sortDirection) {
-    if (!arr || arr.length < 2) return
+interface moveItemArgs {
+    arr: any[] | null,
+    currentId: string,
+    direction: sortDirection,
+    targetId?: string,
+    moveDirection?: "up" | "down",
+}
+export function moveItem({arr, currentId, direction, targetId, moveDirection} : moveItemArgs) {
+    if (!arr || arr.length < 2 || (!targetId && !moveDirection)) return
+    const currentIndex = arr.findIndex((t) => t.id === currentId)
+    let targetIndex = targetId ? arr.findIndex((t) => t.id === targetId) : (moveDirection === 'up' ? currentIndex - 1 : currentIndex + 1);
+    const moveTo = targetId ? (currentIndex - targetIndex > 0 ? "up" : "down") : moveDirection
     const newArr = [...arr]
-    let targetIndex: number;
     switch (direction) {
         case SORT_DIRECTION.ASC:
-            targetIndex = moveTo === 'up' ? currentIndex - 1 : currentIndex + 1
             if (targetIndex < 0 || targetIndex >= newArr.length) return;
             if (moveTo === 'up') {
                 const prevNeighbor = newArr[targetIndex - 1]?.customOrder ?? 0;
@@ -55,7 +63,6 @@ export function moveItem(arr: any[] | null, currentIndex: number, moveTo: "up" |
                 return (prevNeighbor + nextNeighbor) / 2;
             }
         case SORT_DIRECTION.DESC:
-            targetIndex = moveTo === 'up' ? currentIndex - 1 : currentIndex + 1
             if (targetIndex < 0 || targetIndex >= newArr.length) return;
             if (moveTo === 'up') {
                 const prevNeighbor = newArr[targetIndex].customOrder;

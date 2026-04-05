@@ -11,6 +11,8 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@dnd-kit/react": "^0.3.2",
+    "@dnd-kit/sortable": "^10.0.0",
     "@tailwindcss/vite": "^4.2.1",
     "firebase": "^12.10.0",
     "react": "^19.2.0",

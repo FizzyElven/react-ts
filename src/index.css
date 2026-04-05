@@ -1,16 +1,20 @@
 @import "tailwindcss";
+
 root {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
+
 ::backdrop {
   backdrop-filter: blur(1px);
 }
+
 input[type="checkbox"],
 input[type="radio"] {
   accent-color: #0075FF; /* This is the standard "browser blue" */
 }
+
 .priority-bar {
   width: 90px;
   height: 20px;
@@ -24,11 +28,30 @@ input[type="radio"] {
           #ffc000 66.6%,
           #ff0033 66.6%);
 }
+
 .triangle-pointer {
   width: 0;
   height: 0;
-  border-left: 5px solid transparent;  /* Left side slope */
+  border-left: 5px solid transparent; /* Left side slope */
   border-right: 5px solid transparent; /* Right side slope */
-  border-bottom: 15px solid #282828;          /* The actual triangle color */
+  border-bottom: 15px solid #282828; /* The actual triangle color */
   transform: translate(-50%, -25%);
+}
+
+.drag-handle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.drag-handle::before {
+  content: ' ';
+  display: block;
+  padding: 15px;
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-8a2 2 0 1 0-.001-4.001A2 2 0 0 0 13 6zm0 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z' fill='%23919eab'/%3E%3C/svg%3E");
 }

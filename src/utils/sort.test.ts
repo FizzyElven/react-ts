@@ -69,28 +69,40 @@ describe("sortArrayOfObjects", () => {
 
 describe("moveItem", () => {
     it("no array should return undefined", () => {
-        expect(moveItem(null, 2, "up", "asc")).toBe(undefined)
+        expect(moveItem({arr: null, currentId: "0", direction: "asc"})).toBe(undefined)
     })
     it("array with less than 2 elements should return undefined", () => {
-        expect(moveItem([{customOrder: 100}], 0, "up", "asc")).toBe(undefined)
+        expect(moveItem({arr: [{customOrder: 100}], currentId: "0", direction: "asc"})).toBe(undefined)
     })
     it("try to move first object up should return undefined", () => {
-        expect(moveItem([{customOrder: 100}, {customOrder: 200}], 0, "up", "asc")).toBe(undefined)
+        expect(moveItem({arr: [{customOrder: 100, id: "1"}, {customOrder: 200}], currentId: "1", direction: "asc", moveDirection: "up"})).toBe(undefined)
     })
     it("try to move last object down should return undefined", () => {
-        expect(moveItem([{customOrder: 100}, {customOrder: 200}], 1, "down", "asc")).toBe(undefined)
+        expect(moveItem({arr: [{customOrder: 100, id: "0"}, {customOrder: 200, id: "1"}], currentId: "1", direction: "asc", moveDirection: "down"})).toBe(undefined)
     })
     it("moving second element on the first place in asc order need it to have customOrder 50", () => {
-        expect(moveItem([{customOrder: 100}, {customOrder: 200}], 1, "up", "asc")).toBe(50)
+        expect(moveItem({arr:[{customOrder: 100, id: "0"}, {customOrder: 200, id: "1"}], currentId:"1", moveDirection:"up", direction:"asc"})).toBe(50)
     })
     it("moving first element on the second place in asc need it to have customOrder 250", () => {
-        expect(moveItem([{customOrder: 100}, {customOrder: 200}], 0, "down", "asc")).toBe(250)
+        expect(moveItem({arr:[{customOrder: 100, id: "0"}, {customOrder: 200, id: "1"}], currentId:"0", moveDirection:"down", direction:"asc"})).toBe(250)
     })
     it("moving first element on the second place in desc need it to have customOrder 50", () => {
-        expect(moveItem([{customOrder: 200}, {customOrder: 100}], 0, "down", "desc")).toBe(50)
+        expect(moveItem({arr:[{customOrder: 200, id: "1"}, {customOrder: 100, id: "0"}], currentId:"1", moveDirection:"down", direction:"desc"})).toBe(50)
     })
     it("moving second element on the first place in asc order need it to have customOrder 250", () => {
-        expect(moveItem([{customOrder: 200}, {customOrder: 100}], 1, "up", "desc")).toBe(250)
+        expect(moveItem({arr:[{customOrder: 200, id: "1"}, {customOrder: 100, id: "0"}], currentId:"0", moveDirection:"up", direction:"desc"})).toBe(250)
+    })
+    it("moving third element on the first place in asc order need it to have customOrder 50", () => {
+        expect(moveItem({arr:[{customOrder: 100, id: "0"}, {customOrder: 200, id: "1"}, {customOrder: 300, id: "2"}], currentId:"2", targetId: "0", direction:"asc"})).toBe(50)
+    })
+    it("moving first element on the third place in asc need it to have customOrder 250", () => {
+        expect(moveItem({arr:[{customOrder: 100, id: "0"}, {customOrder: 200, id: "1"}, {customOrder: 300, id: "2"}], currentId:"0", targetId: "2", direction:"asc"})).toBe(350)
+    })
+    it("moving first element on the third place in desc need it to have customOrder 50", () => {
+        expect(moveItem({arr:[{customOrder: 300, id: "2"}, {customOrder: 200, id: "1"}, {customOrder: 100, id: "0"}], currentId:"2", targetId: "0", direction:"desc"})).toBe(50)
+    })
+    it("moving third element on the first place in asc order need it to have customOrder 250", () => {
+        expect(moveItem({arr:[{customOrder: 300, id: "2"}, {customOrder: 200, id: "1"}, {customOrder: 100, id: "0"}], currentId:"0", targetId: "2", direction:"desc"})).toBe(350)
     })
 })
 

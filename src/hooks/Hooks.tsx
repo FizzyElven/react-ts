@@ -96,11 +96,13 @@ export const useTasks = ({user, taskService, filtersConfig, search, sortConfig}:
         await fetchTasks();
         setIsEditorOpen(false);
     };
-    async function moveTask(task: TaskData, index: number, moveTo: "up" | "down") {
-        const newOrder = moveItem(processedTasks, index, moveTo, sortConfig.direction)
+
+    async function moveTask(task: TaskData, moveTo?: "up" | "down", targetId?: string, ) {
+        const newOrder = moveItem({arr: processedTasks, currentId: task.id, direction: sortConfig.direction, targetId, moveDirection: moveTo})
         if (!newOrder) return
         await updateTask(task.id!, {...task, customOrder: newOrder})
     }
+
     const processedTasks = useMemo(() => {
         if (tasks && filtersConfig.length > 0) {
             const filteredTasks = filterArray(tasks, filtersConfig)
@@ -128,6 +130,7 @@ export const useTasks = ({user, taskService, filtersConfig, search, sortConfig}:
     }
     return {
         tasks,
+        setTasks,
         isLoading,
         isEditorOpen,
         setIsEditorOpen,
@@ -145,6 +148,7 @@ export const useTasks = ({user, taskService, filtersConfig, search, sortConfig}:
 
 export const useFilters = () => {
     const [filtersConfig, setFiltersConfig] = useState<FilterConfig<TaskData>[]>([]);
+
     function addFilter(field: FilterType, value: string) {
         if (field === FILTERS.OTHER) {
             setFiltersConfig([
@@ -162,17 +166,20 @@ export const useFilters = () => {
     function removeFilter(field: keyof TaskData, value: any) {
         setFiltersConfig(filtersConfig.filter(el => el.field !== field && el.value !== value));
     }
+
     return {removeFilter, addFilter, filtersConfig, setFiltersConfig};
 }
 
 export const useTaskEditor = (initialTask: TaskData | undefined) => {
     const [editedTask, setEditedTask] = useState<TaskData>(initialTask ? initialTask : {
+        id: "0000",
         title: "",
         description: "",
         priority: TASK_PRIORITY.LOW,
         status: TASK_STATUS.IDLE,
         customOrder: 0,
     });
+
     function updateField(field: keyof TaskData, value: any) {
         setEditedTask(task => ({
             ...task,
@@ -190,5 +197,6 @@ export const useTaskEditor = (initialTask: TaskData | undefined) => {
             return;
         }
     }
+
     return {updateField, toggleOptionalProps, editedTask}
 }
