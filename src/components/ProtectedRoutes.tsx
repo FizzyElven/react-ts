@@ -3,8 +3,8 @@ import {useContext} from "react";
 import {FireContext} from "../FireContext.tsx";
 
 function ProtectedRoutes() {
-    const {auth} = useContext(FireContext);
-    return auth.currentUser ? <Outlet/> : <Navigate to="/login" replace={true}/>
+    const {user} = useContext(FireContext);
+    return user ? <Outlet/> : <Navigate to="/login" replace={true}/>
 }
 
 export default ProtectedRoutes;

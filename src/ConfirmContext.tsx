@@ -35,7 +35,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
     return (
         <ConfirmContext.Provider value={{ confirm }}>
             {children}
-            <Modal isOpen={config !== null} onClose={handleCancel}>
+            {config && <Modal isOpen={Boolean(config)} onClose={handleCancel}>
                 {config && (
                     <ConfirmationDialog
                         {...config}
@@ -45,7 +45,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
                         error={error}
                     />
                 )}
-            </Modal>
+            </Modal>}
         </ConfirmContext.Provider>
     );
 }

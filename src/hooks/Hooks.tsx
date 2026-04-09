@@ -1,5 +1,5 @@
-import {getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, type User} from "firebase/auth";
-import {useCallback, useEffect, useMemo, useState} from "react";
+import {type User} from "firebase/auth";
+import {useCallback, useMemo, useState} from "react";
 import {
     type FilterConfig,
     FILTERS,
@@ -12,42 +12,7 @@ import {getNextOrder, moveItem, sortArray} from "../utils/sort.ts";
 import type {TaskService} from "../services/TaskService.ts";
 import {filterArray} from "../utils/filter.ts";
 import {searchInArray} from "../utils/search.ts";
-import {firebaseApp} from "../services/firebase.ts";
-import {useNavigate} from "react-router";
 import {getTaskStatus} from "../utils/taskHelpers.ts";
-
-export const useAuth = () => {
-    const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
-    const auth = getAuth(firebaseApp);
-    const login = async () => {
-        const provider = new GoogleAuthProvider();
-        await signInWithPopup(auth, provider)
-        if (auth.currentUser) {
-            setUser(auth.currentUser);
-            navigate("tasks", {replace: true});
-        }
-    }
-    const logout = async () => {
-        await signOut(auth)
-        setUser(null);
-        if (!auth.currentUser) {
-            navigate("login", {replace: true});
-        }
-    }
-    useEffect(() => {
-        const auth = getAuth();
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            if (currentUser) {
-                setUser(currentUser);
-            }
-            setLoading(false);
-        });
-        return () => unsubscribe();
-    }, []);
-    return {user, loading, login, logout, auth};
-};
 
 interface UseTasksProps {
     user: User;

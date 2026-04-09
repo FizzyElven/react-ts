@@ -1,6 +1,7 @@
 import {initializeApp} from "firebase/app";
 import {getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, type Firestore} from "firebase/firestore";
-import type {TaskData, TaskStore} from "../types/types.ts";
+import type {AuthProvider, TaskData, TaskStore} from "../types/types.ts";
+import {getAuth, GoogleAuthProvider, signInWithPopup, signOut, type User} from "firebase/auth";
 
 const USERS_COLLECTION = "users";
 const TASK_COLLECTION = "tasks";
@@ -14,6 +15,8 @@ const firebaseConfig = {
 };
 export const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
+const auth = getAuth(firebaseApp);
+const provider = new GoogleAuthProvider();
 
 export class FirestoreTaskStore implements TaskStore {
     private readonly db: Firestore;
@@ -53,4 +56,26 @@ export class FirestoreTaskStore implements TaskStore {
     }
 }
 
+export class FirebaseAuthProvider implements AuthProvider {
+    async login() {
+        await signInWithPopup(auth, provider)
+        return auth.currentUser
+    }
+
+    async logout() {
+        try {
+            await signOut(auth)
+            return true
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    }
+
+    async checkLoggedIn(): Promise<User | null> {
+        return auth.currentUser;
+    }
+}
+
+export const firebaseAuthProvider = new FirebaseAuthProvider();
 export const firestoreTaskStore = new FirestoreTaskStore(db)

@@ -1,4 +1,5 @@
 import type {sortDirection, SortMethod} from "../constants/sortConstants.ts";
+import type {User} from "firebase/auth";
 
 export const BTN_VARIANT = {
     PRIMARY: "primary",
@@ -28,7 +29,11 @@ export interface TaskStore {
 
     update(userId: string, taskId: string, taskData: Partial<TaskData>): Promise<void>
 }
-
+export interface AuthProvider {
+    login(): Promise<User | null>;
+    logout(): Promise<boolean>;
+    checkLoggedIn(): Promise<User | null>;
+}
 export interface TaskData {
     id: string;
     createdAt?: number;

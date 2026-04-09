@@ -3,7 +3,7 @@ import Button from "./ui/Button.tsx";
 import {getBorderColor, getPriorityBar, getStatusEmoji} from "../utils/taskHelpers.ts";
 import {useSortable} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
-import {memo, useEffect} from 'react';
+import {memo} from 'react';
 
 interface Props {
     task: TaskData,
@@ -17,11 +17,6 @@ interface Props {
 
 const Task = ({task, tasks, onChangeStatus, onDelete, onEdit, onMove, canManuallySort}: Props) => {
     if (!tasks) return
-    useEffect(() => {
-        console.log("task rendered ", task.id)
-        console.log(task)
-    }, [task]);
-
     const {
         attributes,
         listeners,
