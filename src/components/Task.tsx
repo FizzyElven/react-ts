@@ -33,11 +33,11 @@ const Task = ({task, tasks, onChangeStatus, onDelete, onEdit, onMove, canManuall
     };
 
     return (
-        <div id={task.id} ref={setNodeRef} style={style}
+        <article aria-label={task.title} role="listitem" id={task.id} ref={setNodeRef} style={style}
              className={"relative shadow-lg shadow-gray-200 flex items-start flex-col gap-2.5 border text-2xl p-2.5 rounded-3xl" + ` ${getBorderColor(task.status)}`}>
             <div className="w-full">
                 <div className="flex items-center justify-between w-full">
-                    <p className="font-bold">{task.title}</p>
+                    <h3 className="font-bold">{task.title}</h3>
                     <div className="flex items-center">
                         <p className="font-bold">{task.status}</p>
                         <div role="img" aria-label={`Status: ${task.status}`}
@@ -63,42 +63,42 @@ const Task = ({task, tasks, onChangeStatus, onDelete, onEdit, onMove, canManuall
                 <div className="flex flex-col gap-2.5">
                     {canManuallySort && <div className="flex justify-between w-full">
                       <div className="flex gap-2.5">
-                        <button disabled={!canManuallySort}
+                        <button aria-label={`Move ${task.title} up`} disabled={!canManuallySort}
                                 onClick={() => onMove(task, "up")}
                                 className="flex items-center justify-center hover:border-blue-400 focus-within:border-blue-300 transition hover:bg-gray-50 shadow-lg shadow-gray-200 border-2 text-2xl border-blue-600 px-2.5 rounded-full w-10 h-10 cursor-pointer">
                           ↑
                         </button>
-                        <button disabled={!canManuallySort}
+                        <button aria-label={`Move ${task.title} down`} disabled={!canManuallySort}
                                 onClick={() => onMove(task, "down")}
                                 className="flex items-center justify-center hover:border-blue-400 focus-within:border-blue-300 transition hover:bg-gray-50 shadow-lg shadow-gray-200 border-2 text-2xl border-blue-600 px-2.5 rounded-full w-10 h-10 cursor-pointer">
                           ↓
                         </button>
                       </div>
-                      <button
+                      <button aria-label={`drag ${task.title}`}
                         className="drag-handle p-5 rounded-xl w-3 h-6 cursor-grab" {...attributes} {...listeners}/>
                     </div>
                     }
                     <div className="flex justify-between w-full">
                         {task.status === TASK_STATUS.ACTIVE &&
-                          <Button btnVariant={BTN_VARIANT.PRIMARY}
+                          <Button aria-label={`Complete ${task.title}`} btnVariant={BTN_VARIANT.PRIMARY}
                                   onClick={() => onChangeStatus({...task, status: TASK_STATUS.COMPLETED})}>
                             Complete
                           </Button>}
                         {task.status === TASK_STATUS.IDLE &&
-                          <Button btnVariant={BTN_VARIANT.PRIMARY}
+                          <Button aria-label={`Start ${task.title}`} btnVariant={BTN_VARIANT.PRIMARY}
                                   onClick={() => onChangeStatus({...task, status: TASK_STATUS.ACTIVE})}>
                             Start
                           </Button>}
-                        <Button btnVariant={BTN_VARIANT.PRIMARY} onClick={() => onEdit(task)}>
+                        <Button aria-label={`Edit ${task.title}`} btnVariant={BTN_VARIANT.PRIMARY} onClick={() => onEdit(task)}>
                             Edit
                         </Button>
-                        <Button btnVariant={BTN_VARIANT.DANGER} onClick={() => onDelete(task.id!)}>
+                        <Button aria-label={`Delete ${task.title}`} btnVariant={BTN_VARIANT.DANGER} onClick={() => onDelete(task.id!)}>
                             Delete
                         </Button>
                     </div>
                 </div>
             </div>
-        </div>
+        </article>
     );
 };
 

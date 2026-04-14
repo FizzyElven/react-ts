@@ -27,17 +27,17 @@ export const useAuth = (authService: AuthService) => {
     }
 
     useEffect(() => {
-        const checkAuth = async () => {
-            const loggedIn = await authService.checkUserLoggedIn()
-            if (loggedIn) {
-                setUser(loggedIn)
+        const unsubscribe = authService.onAuthStateChanged((user) => {
+            if (user) {
+                setUser(user);
                 setLoading(false);
             } else {
                 setLoading(false);
-                navigate("login", {replace: true});
+                navigate("login", { replace: true });
             }
-        }
-        checkAuth()
+        });
+
+        return () => unsubscribe(); // cleanup on unmount
     }, []);
     return {user, loading, login, logout};
 };

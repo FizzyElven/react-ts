@@ -21,9 +21,10 @@ function Sorting({sortConfig, setSortConfig, children}: {
             {children}
             <div className="group shadow-lg transition shadow-gray-200 hover:border-blue-400
                     focus-within:border-blue-300 focus-within:shadow-lg border-2 border-blue-600 rounded-full px-2 text-2xl p-2.5 flex gap-2.5">
-                <select
+                <label className="sr-only" htmlFor="task-sort-select">Select how to sort tasks</label>
+                <select id="task-sort-select"
                     className="outline-none"
-                    name="sort" value={sortConfig.key}
+                    name="sorting tasks" value={sortConfig.key}
                     onChange={handleSorting}>
                     <option value="title">Title</option>
                     <option value="status">Status</option>
@@ -32,7 +33,7 @@ function Sorting({sortConfig, setSortConfig, children}: {
                     <option value="customOrder">Custom order</option>
                 </select>
             </div>
-            <button
+            <button aria-label={`Sort ${sortConfig.direction === "asc" ? "descending" : "ascending"}`}
                 className="cursor-pointer font-bold border border-blue-500 transition shadow-lg shadow-gray-200 hover:border-blue-400 hover:border-2 w-10 h-10
                     focus-within:border-blue-300 focus-within:shadow-lg rounded-full px-2 text-2xl p-2.5 flex gap-2.5"
                 onClick={() => setSortConfig((prevState: { direction: string; }) => {

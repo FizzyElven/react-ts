@@ -4,7 +4,6 @@ import {BTN_VARIANT, type SortArrayConfig, type TaskData} from "../types/types.t
 import {SortableTaskItem} from "../components/Task.tsx";
 import Modal from "../components/Modal.tsx";
 import TaskEditor from "../components/TaskEditor.tsx";
-import {useNavigate} from "react-router";
 import {SORT_DIRECTION, SORT_METHOD} from "../constants/sortConstants.ts";
 import Filters from "../components/Filters.tsx";
 import Button from "../components/ui/Button.tsx";
@@ -13,20 +12,22 @@ import Sorting from "../components/Sorting.tsx";
 import {useFilters, useTasks} from "../hooks/Hooks.tsx";
 import {useConfirm} from "../ConfirmContext.tsx";
 import {DndContext, closestCenter} from '@dnd-kit/core';
-import {SortableContext, rectSortingStrategy} from '@dnd-kit/sortable';
-import type {DragEndEvent} from "@dnd-kit/core";
+import {SortableContext, rectSortingStrategy, sortableKeyboardCoordinates} from '@dnd-kit/sortable';
+import {type DragEndEvent, useSensor, useSensors, KeyboardSensor, PointerSensor} from "@dnd-kit/core";
 import {moveItem} from "../utils/sort.ts";
 
 function Tasks() {
     const {user, taskService} = useContext(FireContext)
-    const navigate = useNavigate();
-    if (!user) {
-        navigate("/login", {replace: true});
-        return
-    }
+    if (!user) return <div>Something went wrong</div>
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates, // <-- This is the magic line
+        })
+    );
     const [search, setSearch] = useState<string>("");
     const [sortConfig, setSortConfig] = useState<SortArrayConfig<TaskData>>({
-        key: "id",
+        key: "title",
         direction: SORT_DIRECTION.ASC,
         sortMethod: SORT_METHOD.ALPHABETICAL,
     });
@@ -84,14 +85,14 @@ function Tasks() {
             <Filters setFiltersConfig={setFiltersConfig} filtersConfig={filtersConfig} addFilter={addFilter}
                      removeFilter={removeFilter}/>
             <Sorting sortConfig={sortConfig} setSortConfig={setSortConfig}>
-                <InputField onChange={event => setSearch(event.target.value)} placeholder="Search Tasks">🔍</InputField>
+                <InputField label="Search task" hiddenLabel={true} onChange={event => setSearch(event.target.value)} placeholder="Search Tasks">🔍</InputField>
             </Sorting>
             {(isLoading && !processedTasks) &&
               <div className="w-2xl h-96 flex justify-center items-center">Loading...</div>}
             {processedTasks && processedTasks.length > 0 ?
-                <DndContext collisionDetection={closestCenter} onDragEnd={(e) => handleDragEnd(e)}>
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(e) => handleDragEnd(e)}>
                     <SortableContext items={processedTasks} strategy={rectSortingStrategy}>
-                        <div className="gap-5 w-full grid grid-cols-4">
+                        <div role="list" className="gap-5 w-full grid grid-cols-4">
                             {processedTasks.map((task) => (
                                 <SortableTaskItem canManuallySort={sortConfig.key === "customOrder"} task={task}
                                                   tasks={processedTasks}

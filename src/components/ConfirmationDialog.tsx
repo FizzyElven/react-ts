@@ -12,9 +12,9 @@ export function ConfirmationDialog({title, text, btnVariant, confirmText, onConf
             <p className="text-2xl">{text}</p>
             {error && <p className="text-red-500 text-sm">{error}</p>}
             <div className="flex justify-between items-center w-full gap-5">
-                <Button btnVariant={btnVariant === BTN_VARIANT.PRIMARY ? BTN_VARIANT.PRIMARY : BTN_VARIANT.DANGER}
+                <Button aria-label={"confirm dialog, confirm " + title} btnVariant={btnVariant === BTN_VARIANT.PRIMARY ? BTN_VARIANT.PRIMARY : BTN_VARIANT.DANGER}
                         onClick={onConfirm} disabled={isLoading}>{confirmText}</Button>
-                <Button btnVariant={BTN_VARIANT.PRIMARY} onClick={onCancel} disabled={isLoading}>Cancel</Button>
+                <Button aria-label={"confirm dialog, cancel " + title} btnVariant={BTN_VARIANT.PRIMARY} onClick={onCancel} disabled={isLoading}>Cancel</Button>
             </div>
         </div>
     );

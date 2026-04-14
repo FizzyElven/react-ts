@@ -1,18 +1,12 @@
 import {initializeApp} from "firebase/app";
 import {getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, type Firestore} from "firebase/firestore";
 import type {AuthProvider, TaskData, TaskStore} from "../types/types.ts";
-import {getAuth, GoogleAuthProvider, signInWithPopup, signOut, type User} from "firebase/auth";
+import {getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, type User} from "firebase/auth";
+import {firebaseConfig} from "../../firebaseConfig.ts"
 
 const USERS_COLLECTION = "users";
 const TASK_COLLECTION = "tasks";
-const firebaseConfig = {
-    apiKey: "AIzaSyClCZrothVuL2FeDwjzpGQslqbuK3HJkr4",
-    authDomain: "task-manager-reactts.firebaseapp.com",
-    projectId: "task-manager-reactts",
-    storageBucket: "task-manager-reactts.firebasestorage.app",
-    messagingSenderId: "219132739302",
-    appId: "1:219132739302:web:0cbc6914933c00fc360527"
-};
+
 export const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
@@ -72,8 +66,9 @@ export class FirebaseAuthProvider implements AuthProvider {
         }
     }
 
-    async checkLoggedIn(): Promise<User | null> {
-        return auth.currentUser;
+    checkLoggedIn(callback: (user: User | null) => void) {
+        const auth = getAuth(firebaseApp);
+        return onAuthStateChanged(auth, callback); // returns unsubscribe fn
     }
 }
 

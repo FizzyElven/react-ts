@@ -12,7 +12,7 @@ export class AuthService {
     async logout(): Promise<boolean> {
         return this.authProvider.logout()
     }
-    async checkUserLoggedIn() {
-        return await this.authProvider.checkLoggedIn()
+    onAuthStateChanged(callback: (user: User | null) => void) {
+        return this.authProvider.checkLoggedIn(callback);
     }
 }

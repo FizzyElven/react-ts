@@ -1,5 +1,5 @@
 import type {sortDirection, SortMethod} from "../constants/sortConstants.ts";
-import type {User} from "firebase/auth";
+import type {Unsubscribe, User} from "firebase/auth";
 
 export const BTN_VARIANT = {
     PRIMARY: "primary",
@@ -32,7 +32,7 @@ export interface TaskStore {
 export interface AuthProvider {
     login(): Promise<User | null>;
     logout(): Promise<boolean>;
-    checkLoggedIn(): Promise<User | null>;
+    checkLoggedIn(callback: (user: User | null) => void): Unsubscribe;
 }
 export interface TaskData {
     id: string;

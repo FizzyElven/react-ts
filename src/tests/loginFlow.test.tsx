@@ -55,7 +55,7 @@ describe("LoginFlow", () => {
         const mockAuthService = {
             login: vi.fn().mockResolvedValue({id: '1', name: 'Dev User'}),
             logout: vi.fn(),
-            checkUserLoggedIn: vi.fn().mockResolvedValue(null),
+            onAuthStateChanged: vi.fn().mockReturnValue(()=>{}),
         } as unknown as AuthService;
 
         render(
@@ -74,19 +74,14 @@ describe("LoginFlow", () => {
         expect(await screen.findByText(/task dashboard/i)).toBeInTheDocument();
     });
     test("Navbar renders correctly when user is logged in", async () => {
-        const mockAuthService = {
-            login: vi.fn(),
-            logout: vi.fn(),
-            checkUserLoggedIn: vi.fn().mockResolvedValue({id: '1', name: 'Dev User'}),
-        } as unknown as AuthService;
 
         render(
             <MemoryRouter>
-                <TestAuthProvider service={mockAuthService}>
+                <FireContext.Provider value={{user: {} as any,} as any}>
                     <ConfirmProvider>
                         <Navbar/>
                     </ConfirmProvider>
-                </TestAuthProvider>
+                </FireContext.Provider>
             </MemoryRouter>
         );
 
@@ -95,13 +90,12 @@ describe("LoginFlow", () => {
     test("redirect to /login after sign out", async () => {
         const user = userEvent.setup()
         const mockAuthService = {
-            login: vi.fn(),
+            login: vi.fn().mockResolvedValue({id: '1', name: 'Dev User'}),
             logout: vi.fn().mockResolvedValue(true),
-            checkUserLoggedIn: vi.fn().mockResolvedValue({id: '1', name: 'Dev User'}),
+            onAuthStateChanged: vi.fn().mockReturnValue(()=>{}),
         } as unknown as AuthService;
-        const spy = vi.spyOn(mockAuthService, "checkUserLoggedIn")
         render(
-            <MemoryRouter initialEntries={['/tasks']}>
+            <MemoryRouter initialEntries={['/login']}>
                 <TestAuthProvider service={mockAuthService}>
                     <ConfirmProvider>
                         <Navbar/>
@@ -113,10 +107,14 @@ describe("LoginFlow", () => {
                 </TestAuthProvider>
             </MemoryRouter>
         );
-        expect(spy).toHaveBeenCalled()
+        const loginButton = screen.getByRole('button', {name: /via google/i});
+        await user.click(loginButton);
+        expect(await screen.findByText(/task dashboard/i)).toBeInTheDocument();
+
         await screen.findByRole("button", {name: /sign out/i})
         const signOutBtn = screen.getByRole('button', {name: /sign out/i})
         await user.click(signOutBtn);
+
         const confirmBtn = screen.getByRole('button', {name: "Sign Out"})
         await user.click(confirmBtn);
         await screen.findByRole("button", {name: /via google/i})
