@@ -61,8 +61,8 @@ const Task = ({task, tasks, onChangeStatus, onDelete, onEdit, onMove, canManuall
             <hr className="w-full"/>
             <div className="flex flex-col h-full w-full justify-between gap-2.5">
                 <p>{task.description}</p>
-                {(error && error.taskId === task.id && error.errorScope === "update") && <div className="text-red-500 text-md">failed to update task status: {error.message}</div>}
-                {(error && error.taskId === task.id && error.errorScope === "move") && <div className="text-red-500 text-md">failed to update task position: {error.message}</div>}
+                {(error && error.taskId === task.id && error.errorScope === "update") && <p className="text-red-500 text-md">failed to update task status: {error.message}</p>}
+                {(error && error.taskId === task.id && error.errorScope === "move") && <p className="text-red-500 text-md">failed to update task position: {error.message}</p>}
                 <div className="flex flex-col gap-2.5">
                     {canManuallySort && <div className="flex justify-between w-full">
                       <div className="flex gap-2.5">

@@ -64,8 +64,13 @@ function Tasks() {
     async function handleDragEnd(event: DragEndEvent) {
         if (!processedTasks) return
         const {active, over} = event;
-        if (over && active.id !== over.id ) {
-            const newOrderValue = moveItem({arr: processedTasks, currentId: active.id.toString(), direction: sortConfig.direction, targetId: over.id.toString()});
+        if (over && active.id !== over.id) {
+            const newOrderValue = moveItem({
+                arr: processedTasks,
+                currentId: active.id.toString(),
+                direction: sortConfig.direction,
+                targetId: over.id.toString()
+            });
             if (!newOrderValue) return
             const activeTaskIndex = processedTasks.findIndex((t) => t.id === active.id)
             const activeTask = {...processedTasks[activeTaskIndex]}
@@ -86,10 +91,12 @@ function Tasks() {
             <Filters setFiltersConfig={setFiltersConfig} filtersConfig={filtersConfig} addFilter={addFilter}
                      removeFilter={removeFilter}/>
             <Sorting sortConfig={sortConfig} setSortConfig={setSortConfig}>
-                <InputField label="Search task" hiddenLabel={true} onChange={event => setSearch(event.target.value)} placeholder="Search Tasks">🔍</InputField>
+                <InputField label="Search task" hiddenLabel={true} onChange={event => setSearch(event.target.value)}
+                            placeholder="Search Tasks">🔍</InputField>
             </Sorting>
             {(isLoading && !processedTasks) &&
               <div className="w-2xl h-96 flex justify-center items-center">Loading...</div>}
+            {(error && error.errorScope === "get") && <p className="text-red-500 text-2xl">failed to get tasks: {error.message}</p>}
             {processedTasks && processedTasks.length > 0 ?
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(e) => handleDragEnd(e)}>
                     <SortableContext items={processedTasks} strategy={rectSortingStrategy}>
@@ -104,9 +111,7 @@ function Tasks() {
                         </div>
                     </SortableContext>
                 </DndContext> :
-                <div className="mt-36 flex flex-col items-center text-2xl">You currently have no tasks
-                    {(error && error.errorScope === "get") && <div className="text-red-500">failed to get tasks: {error.message}</div>}
-                </div>}
+                <div className="mt-36 flex flex-col items-center text-2xl">You currently have no tasks</div>}
             {isEditorOpen && <Modal isOpen={isEditorOpen} onClose={() => setIsEditorOpen(false)}>
               <TaskEditor onCreate={addTask} onEdit={updateTask} error={error}
                           onCancel={() => setIsEditorOpen(false)} initialTask={editTask}/>

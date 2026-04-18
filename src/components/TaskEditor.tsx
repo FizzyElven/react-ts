@@ -74,8 +74,8 @@ function TaskEditor({onCancel, onCreate, onEdit, initialTask, error}: TaskEditor
                       </>}
                 </div>
             </form>
-            {(error && error.errorScope === "update") && <div className="text-red-500 text-sm">Failed to update task: {error.message}</div>}
-            {(error && error.errorScope === "add") && <div className="text-red-500 text-sm">Failed to create new task: {error.message}</div>}
+            {(error && error.errorScope === "update") && <p className="text-red-500 text-md">Failed to update task: {error.message}</p>}
+            {(error && error.errorScope === "add") && <p className="text-red-500 text-md">Failed to create new task: {error.message}</p>}
             <div className="flex justify-between items-center w-sm">
                 <Button btnVariant={BTN_VARIANT.PRIMARY} onClick={()=> initialTask ? onEdit(initialTask.id!, editedTask) : onCreate(editedTask)}>
                     Submit
