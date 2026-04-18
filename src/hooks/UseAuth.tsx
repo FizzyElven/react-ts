@@ -4,40 +4,46 @@ import {type User} from "firebase/auth";
 import {AuthService} from "../services/AuthService.ts";
 
 export const useAuth = (authService: AuthService) => {
-    const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
-    const login = async () => {
-        try {
-            const user = await authService.login()
-            if (user) {
-                setUser(user);
-                navigate("tasks", {replace: true});
+        const [user, setUser] = useState<User | null>(null);
+        const [loading, setLoading] = useState(true);
+        const [error, setError] = useState<string | null>(null);
+        const navigate = useNavigate();
+        const login = async () => {
+            try {
+                const user = await authService.login()
+                if (user) {
+                    setUser(user);
+                    navigate("tasks", {replace: true});
+                }
+            } catch (e) {
+                if (e instanceof Error)setError(e.message);
+                console.error(e);
             }
-        } catch (e) {
-            console.error(e);
         }
-    }
-    const logout = async () => {
-        const success = await authService.logout()
-        if (success) {
-            setUser(null);
-            navigate("login", {replace: true});
-        }
-    }
-
-    useEffect(() => {
-        const unsubscribe = authService.onAuthStateChanged((user) => {
-            if (user) {
-                setUser(user);
-                setLoading(false);
-            } else {
-                setLoading(false);
-                navigate("login", { replace: true });
+        const logout = async () => {
+            try {
+                await authService.logout()
+                setUser(null);
+                navigate("login", {replace: true});
+            } catch (e) {
+                if (e instanceof Error)setError(e.message);
+                console.error(e);
             }
-        });
+        }
 
-        return () => unsubscribe(); // cleanup on unmount
-    }, []);
-    return {user, loading, login, logout};
-};
+        useEffect(() => {
+            const unsubscribe = authService.onAuthStateChanged((user) => {
+                if (user) {
+                    setUser(user);
+                    setLoading(false);
+                } else {
+                    setLoading(false);
+                    navigate("login", {replace: true});
+                }
+            });
+
+            return () => unsubscribe(); // cleanup on unmount
+        }, []);
+        return {user, loading, login, logout, error};
+    }
+;

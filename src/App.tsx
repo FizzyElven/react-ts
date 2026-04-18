@@ -2,7 +2,7 @@ import {Navigate, Route, Routes} from "react-router";
 import Navbar from "./components/Navbar.tsx";
 import ProtectedRoutes from "./components/ProtectedRoutes.tsx";
 import {firebaseAuthProvider, firestoreTaskStore} from "./services/firebase.ts";
-import {FireContext} from "./FireContext.tsx";
+import {AuthContext} from "./AuthContext.tsx";
 import {useAuth} from "./hooks/UseAuth.tsx";
 import Loader from "./components/Loader.tsx";
 import {lazy} from "react";
@@ -25,16 +25,16 @@ export const AppRoutes = () => {
 }
 
 function App() {
-    const {loading, user, login, logout} = useAuth(authService)
+    const {loading, user, login, logout, error} = useAuth(authService)
     if (loading) return <Loader/>
     return (
         <div className="flex flex-col">
-            <FireContext.Provider value={{user, login, logout, taskService}}>
+            <AuthContext.Provider value={{user, login, logout, error, taskService}}>
                 <ConfirmProvider>
                     <Navbar/>
                     <AppRoutes/>
                 </ConfirmProvider>
-            </FireContext.Provider>
+            </AuthContext.Provider>
         </div>
     )
 }

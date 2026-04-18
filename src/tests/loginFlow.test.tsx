@@ -5,7 +5,7 @@ import {userEvent} from "@testing-library/user-event/dist/cjs/setup/index.js";
 import {AppRoutes} from "../App.tsx";
 import {MemoryRouter, Route, Routes} from "react-router";
 import type {ReactElement} from "react";
-import {FireContext} from "../FireContext.tsx";
+import {AuthContext} from "../AuthContext.tsx";
 import type {AuthService} from "../services/AuthService.ts";
 import {useAuth} from "../hooks/UseAuth.tsx";
 import Navbar from "../components/Navbar.tsx";
@@ -15,14 +15,15 @@ const mockLoginFn = vi.fn()
 
 const renderWithContext = (ui: ReactElement) => {
     return render(
-        <FireContext.Provider value={{
+        <AuthContext.Provider value={{
             login: mockLoginFn(),
             logout: vi.fn(),
             user: {} as any,
             taskService: {} as any,
+            error: null,
         }}>
             {ui}
-        </FireContext.Provider>
+        </AuthContext.Provider>
     );
 };
 
@@ -44,9 +45,9 @@ describe("LoginFlow", () => {
     const TestAuthProvider = ({children, service}: { children: ReactElement, service: AuthService }) => {
         const auth = useAuth(service); // Now called inside a real component body!
         return (
-            <FireContext.Provider value={{...auth, taskService: {} as any}}>
+            <AuthContext.Provider value={{...auth, taskService: {} as any}}>
                 {children}
-            </FireContext.Provider>
+            </AuthContext.Provider>
         );
     };
 
@@ -77,11 +78,11 @@ describe("LoginFlow", () => {
 
         render(
             <MemoryRouter>
-                <FireContext.Provider value={{user: {} as any,} as any}>
+                <AuthContext.Provider value={{user: {} as any,} as any}>
                     <ConfirmProvider>
                         <Navbar/>
                     </ConfirmProvider>
-                </FireContext.Provider>
+                </AuthContext.Provider>
             </MemoryRouter>
         );
 

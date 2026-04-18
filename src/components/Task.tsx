@@ -1,4 +1,4 @@
-import {BTN_VARIANT, TASK_STATUS, type TaskData} from "../types/types.ts";
+import {BTN_VARIANT, TASK_STATUS, type TaskData, type TasksError} from "../types/types.ts";
 import Button from "./ui/Button.tsx";
 import {getBorderColor, getPriorityBar, getStatusEmoji} from "../utils/taskHelpers.ts";
 import {useSortable} from '@dnd-kit/sortable';
@@ -13,9 +13,10 @@ interface Props {
     onEdit: (task: TaskData) => void,
     onMove: (task: TaskData, direction?: "up" | "down") => void,
     canManuallySort: boolean,
+    error: TasksError | null,
 }
 
-const Task = ({task, tasks, onChangeStatus, onDelete, onEdit, onMove, canManuallySort}: Props) => {
+const Task = ({task, tasks, onChangeStatus, onDelete, onEdit, onMove, canManuallySort, error}: Props) => {
     if (!tasks) return
     const {
         attributes,
@@ -34,7 +35,7 @@ const Task = ({task, tasks, onChangeStatus, onDelete, onEdit, onMove, canManuall
 
     return (
         <article aria-label={task.title} role="listitem" id={task.id} ref={setNodeRef} style={style}
-             className={"relative shadow-lg shadow-gray-200 flex items-start flex-col gap-2.5 border text-2xl p-2.5 rounded-3xl" + ` ${getBorderColor(task.status)}`}>
+                 className={"relative shadow-lg shadow-gray-200 flex items-start flex-col gap-2.5 border text-2xl p-2.5 rounded-3xl" + ` ${getBorderColor(task.status)}`}>
             <div className="w-full">
                 <div className="flex items-center justify-between w-full">
                     <h3 className="font-bold">{task.title}</h3>
@@ -60,6 +61,8 @@ const Task = ({task, tasks, onChangeStatus, onDelete, onEdit, onMove, canManuall
             <hr className="w-full"/>
             <div className="flex flex-col h-full w-full justify-between gap-2.5">
                 <p>{task.description}</p>
+                {(error && error.taskId === task.id && error.errorScope === "update") && <div className="text-red-500 text-md">failed to update task status: {error.message}</div>}
+                {(error && error.taskId === task.id && error.errorScope === "move") && <div className="text-red-500 text-md">failed to update task position: {error.message}</div>}
                 <div className="flex flex-col gap-2.5">
                     {canManuallySort && <div className="flex justify-between w-full">
                       <div className="flex gap-2.5">
@@ -75,7 +78,7 @@ const Task = ({task, tasks, onChangeStatus, onDelete, onEdit, onMove, canManuall
                         </button>
                       </div>
                       <button aria-label={`drag ${task.title}`}
-                        className="drag-handle p-5 rounded-xl w-3 h-6 cursor-grab" {...attributes} {...listeners}/>
+                              className="drag-handle p-5 rounded-xl w-3 h-6 cursor-grab" {...attributes} {...listeners}/>
                     </div>
                     }
                     <div className="flex justify-between w-full">
@@ -89,10 +92,12 @@ const Task = ({task, tasks, onChangeStatus, onDelete, onEdit, onMove, canManuall
                                   onClick={() => onChangeStatus({...task, status: TASK_STATUS.ACTIVE})}>
                             Start
                           </Button>}
-                        <Button aria-label={`Edit ${task.title}`} btnVariant={BTN_VARIANT.PRIMARY} onClick={() => onEdit(task)}>
+                        <Button aria-label={`Edit ${task.title}`} btnVariant={BTN_VARIANT.PRIMARY}
+                                onClick={() => onEdit(task)}>
                             Edit
                         </Button>
-                        <Button aria-label={`Delete ${task.title}`} btnVariant={BTN_VARIANT.DANGER} onClick={() => onDelete(task.id!)}>
+                        <Button aria-label={`Delete ${task.title}`} btnVariant={BTN_VARIANT.DANGER}
+                                onClick={() => onDelete(task.id!)}>
                             Delete
                         </Button>
                     </div>

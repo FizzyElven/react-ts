@@ -1,5 +1,5 @@
 import {useContext, useState} from "react";
-import {FireContext} from "../FireContext.tsx";
+import {AuthContext} from "../AuthContext.tsx";
 import {BTN_VARIANT, type SortArrayConfig, type TaskData} from "../types/types.ts";
 import {SortableTaskItem} from "../components/Task.tsx";
 import Modal from "../components/Modal.tsx";
@@ -17,7 +17,7 @@ import {type DragEndEvent, useSensor, useSensors, KeyboardSensor, PointerSensor}
 import {moveItem} from "../utils/sort.ts";
 
 function Tasks() {
-    const {user, taskService} = useContext(FireContext)
+    const {user, taskService} = useContext(AuthContext)
     if (!user) return <div>Something went wrong</div>
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -46,6 +46,7 @@ function Tasks() {
         handleEditTask,
         handleCreateTask,
         editTask,
+        error,
     } = useTasks({user, taskService, search, sortConfig, filtersConfig});
     const confirm = useConfirm()
     const confirmDeleteTask = (taskId: string) => {
@@ -95,7 +96,7 @@ function Tasks() {
                         <div role="list" className="gap-5 w-full grid grid-cols-4">
                             {processedTasks.map((task) => (
                                 <SortableTaskItem canManuallySort={sortConfig.key === "customOrder"} task={task}
-                                                  tasks={processedTasks}
+                                                  tasks={processedTasks} error={error}
                                                   onChangeStatus={(task) => updateTask(task.id!, task)}
                                                   onDelete={confirmDeleteTask}
                                                   onEdit={handleEditTask} key={task.id} onMove={moveTask}/>
@@ -103,9 +104,11 @@ function Tasks() {
                         </div>
                     </SortableContext>
                 </DndContext> :
-                <div className="mt-36 flex flex-col items-center text-2xl">You currently have no tasks</div>}
+                <div className="mt-36 flex flex-col items-center text-2xl">You currently have no tasks
+                    {(error && error.errorScope === "get") && <div className="text-red-500">failed to get tasks: {error.message}</div>}
+                </div>}
             {isEditorOpen && <Modal isOpen={isEditorOpen} onClose={() => setIsEditorOpen(false)}>
-              <TaskEditor onCreate={addTask} onEdit={updateTask}
+              <TaskEditor onCreate={addTask} onEdit={updateTask} error={error}
                           onCancel={() => setIsEditorOpen(false)} initialTask={editTask}/>
             </Modal>}
         </div>

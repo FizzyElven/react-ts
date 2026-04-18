@@ -15,7 +15,10 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
     const [error, setError] = useState<string | null>(null);
 
     const confirm = (options: ConfirmOptions) => setConfig(options);
-    const handleCancel = () => setConfig(null);
+    const handleCancel = () => {
+        setError(null);
+        setConfig(null)
+    }
     const handleConfirm = async () => {
         if (!config) return;
 
@@ -36,7 +39,6 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
         <ConfirmContext.Provider value={{ confirm }}>
             {children}
             {config && <Modal isOpen={Boolean(config)} onClose={handleCancel}>
-                {config && (
                     <ConfirmationDialog
                         {...config}
                         onConfirm={handleConfirm}
@@ -44,7 +46,6 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
                         isLoading={isLoading}
                         error={error}
                     />
-                )}
             </Modal>}
         </ConfirmContext.Provider>
     );

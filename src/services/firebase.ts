@@ -57,13 +57,7 @@ export class FirebaseAuthProvider implements AuthProvider {
     }
 
     async logout() {
-        try {
             await signOut(auth)
-            return true
-        } catch (error) {
-            console.error(error);
-            return false;
-        }
     }
 
     checkLoggedIn(callback: (user: User | null) => void) {

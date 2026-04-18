@@ -1,9 +1,8 @@
 import {useContext} from "react";
-import {FireContext} from "../FireContext.tsx";
+import {AuthContext} from "../AuthContext.tsx";
 
 function Login() {
-const {login} = useContext(FireContext)
-
+const {login, error} = useContext(AuthContext)
     return (
         <div className="container mx-auto mt-10">
             <div className="flex items-center justify-center">
@@ -13,6 +12,7 @@ const {login} = useContext(FireContext)
                         className="border p-2 text-2xl rounded-md flex items-center justify-center hover:bg-gray-300 transition-colors duration-300 ease-in-out">
                         via Google
                     </button>
+                    {error && <div className="text-red-500">{error.message}</div>}
                 </div>
             </div>
         </div>

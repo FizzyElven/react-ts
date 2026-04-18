@@ -31,13 +31,13 @@ export interface TaskStore {
 }
 export interface AuthProvider {
     login(): Promise<User | null>;
-    logout(): Promise<boolean>;
+    logout(): Promise<void>;
     checkLoggedIn(callback: (user: User | null) => void): Unsubscribe;
 }
 export interface TaskData {
     id: string;
     createdAt?: number;
-    dueDate?: number;
+    dueDate?: number | null;
     title: string;
     description: string;
     priority: taskPriority;
@@ -71,3 +71,11 @@ export const FILTERS = {
     OTHER: "other",
 } as const;
 export type FilterType = typeof FILTERS[keyof typeof FILTERS];
+
+export type ErrorScope = "get" | "add" | "update" | "move"
+
+export interface TasksError {
+    message: string;
+    errorScope: ErrorScope;
+    taskId?: string;
+}

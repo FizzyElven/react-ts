@@ -9,7 +9,7 @@ export class AuthService {
     async login(): Promise<User | null> {
         return this.authProvider.login()
     }
-    async logout(): Promise<boolean> {
+    async logout(): Promise<void> {
         return this.authProvider.logout()
     }
     onAuthStateChanged(callback: (user: User | null) => void) {

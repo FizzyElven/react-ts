@@ -1,12 +1,12 @@
 import {type User} from "firebase/auth";
-import {useCallback, useMemo, useState} from "react";
+import {useCallback, useEffect, useMemo, useState} from "react";
 import {
     type FilterConfig,
     FILTERS,
     type FilterType,
     type SortArrayConfig,
     TASK_PRIORITY, TASK_STATUS,
-    type TaskData
+    type TaskData, type TasksError
 } from "../types/types.ts";
 import {getNextOrder, moveItem, sortArray} from "../utils/sort.ts";
 import type {TaskService} from "../services/TaskService.ts";
@@ -27,14 +27,22 @@ export const useTasks = ({user, taskService, filtersConfig, search, sortConfig}:
     const [isEditorOpen, setIsEditorOpen] = useState(false);
     const [editTask, setEditTask] = useState<TaskData | undefined>(undefined);
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<TasksError | null>(null);
+    useEffect(() => {
+        setError(null);
+    }, [isEditorOpen]);
     const fetchTasks = useCallback(
         async () => {
             if (!user?.uid) return
+            setError(null);
             setIsLoading(true);
             try {
                 const data = await taskService.getUserTasks(user.uid);
                 const processedData = data.map(task => getTaskStatus(task))
                 setTasks(processedData || []);
+            } catch (e) {
+                if (e instanceof Error) setError({message: e.message, errorScope: "get"});
+                console.log(e)
             } finally {
                 setIsLoading(false);
             }
@@ -42,30 +50,57 @@ export const useTasks = ({user, taskService, filtersConfig, search, sortConfig}:
     )
     const addTask = async (task: TaskData) => {
         if (!user?.uid) return;
-        await taskService.addTaskToUser(user.uid, {
-            ...task,
-            createdAt: Date.now(),
-            customOrder: getNextOrder(tasks)
-        });
-        await fetchTasks(); // Refresh list
-        setIsEditorOpen(false);
+        setError(null);
+        try {
+            await taskService.addTaskToUser(user.uid, {
+                ...task,
+                createdAt: Date.now(),
+                customOrder: getNextOrder(tasks)
+            })
+            await fetchTasks()
+            setIsEditorOpen(false);
+        } catch (e) {
+            if (e instanceof Error) setError({message: e.message, errorScope: "add"});
+            console.log(e)
+        }
     };
     const deleteTask = async (taskId: string) => {
         if (!user?.uid) return;
+        setError(null);
         await taskService.deleteUserTask(user.uid, taskId);
         await fetchTasks();
     };
     const updateTask = async (taskId: string, updatedData: Partial<TaskData>) => {
         if (!user?.uid) return;
-        await taskService.updateUserTask(user.uid, taskId, updatedData);
-        await fetchTasks();
-        setIsEditorOpen(false);
+        setError(null);
+        try {
+            await taskService.updateUserTask(user.uid, taskId, updatedData);
+            await fetchTasks();
+            setIsEditorOpen(false);
+        } catch (e) {
+            if (e instanceof Error) setError({message: e.message, errorScope: "update", taskId: taskId});
+            console.log(e)
+            throw new Error("failed to update task");
+        }
     };
 
-    async function moveTask(task: TaskData, moveTo?: "up" | "down", targetId?: string, ) {
-        const newOrder = moveItem({arr: processedTasks, currentId: task.id, direction: sortConfig.direction, targetId, moveDirection: moveTo})
+    async function moveTask(task: TaskData, moveTo?: "up" | "down", targetId?: string,) {
+        setError(null);
+        const newOrder = moveItem({
+            arr: processedTasks,
+            currentId: task.id,
+            direction: sortConfig.direction,
+            targetId,
+            moveDirection: moveTo
+        })
         if (!newOrder) return
-        await updateTask(task.id!, {...task, customOrder: newOrder})
+        try {
+            await taskService.updateUserTask(user.uid, task.id!, {...task, customOrder: newOrder})
+            await fetchTasks();
+        } catch (e) {
+            if (e instanceof Error) setError({message: e.message, errorScope: "move", taskId: task.id});
+            console.log(e)
+        }
     }
 
     const processedTasks = useMemo(() => {
@@ -108,6 +143,7 @@ export const useTasks = ({user, taskService, filtersConfig, search, sortConfig}:
         handleCreateTask,
         handleEditTask,
         editTask,
+        error,
     };
 }
 
@@ -153,9 +189,8 @@ export const useTaskEditor = (initialTask: TaskData | undefined) => {
     }
 
     function toggleOptionalProps(prop: keyof TaskData, value?: any) {
-        if (editedTask.hasOwnProperty(prop)) {
-            delete editedTask[prop];
-            setEditedTask({...editedTask});
+        if (editedTask[prop]) {
+            setEditedTask({...editedTask, [prop]: null});
             return;
         } else {
             setEditedTask({...editedTask, [prop]: value});

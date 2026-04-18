@@ -1,4 +1,4 @@
-import {BTN_VARIANT, TASK_PRIORITY, TASK_STATUS, type TaskData} from "../types/types.ts";
+import {BTN_VARIANT, TASK_PRIORITY, TASK_STATUS, type TaskData, type TasksError} from "../types/types.ts";
 import Button from "./ui/Button.tsx";
 import InputField from "./ui/InputField.tsx";
 import {useTaskEditor} from "../hooks/Hooks.tsx";
@@ -7,10 +7,11 @@ interface TaskEditorProps {
     onCancel: () => void;
     onCreate: (task: TaskData) => Promise<void>
     onEdit: (taskId: string, initialTask: TaskData) => Promise<void>;
+    error: TasksError | null;
     initialTask?: TaskData;
 }
 
-function TaskEditor({onCancel, onCreate, onEdit, initialTask}: TaskEditorProps) {
+function TaskEditor({onCancel, onCreate, onEdit, initialTask, error}: TaskEditorProps) {
     const {editedTask, updateField, toggleOptionalProps} = useTaskEditor(initialTask)
 
     return (
@@ -73,6 +74,8 @@ function TaskEditor({onCancel, onCreate, onEdit, initialTask}: TaskEditorProps) 
                       </>}
                 </div>
             </form>
+            {(error && error.errorScope === "update") && <div className="text-red-500 text-sm">Failed to update task: {error.message}</div>}
+            {(error && error.errorScope === "add") && <div className="text-red-500 text-sm">Failed to create new task: {error.message}</div>}
             <div className="flex justify-between items-center w-sm">
                 <Button btnVariant={BTN_VARIANT.PRIMARY} onClick={()=> initialTask ? onEdit(initialTask.id!, editedTask) : onCreate(editedTask)}>
                     Submit

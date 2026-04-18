@@ -1,7 +1,7 @@
 import {describe, expect, test, vi} from "vitest";
 import {fireEvent, render, screen} from "@testing-library/react";
 import Tasks from "../pages/Tasks.tsx";
-import {FireContext} from "../FireContext.tsx";
+import {AuthContext} from "../AuthContext.tsx";
 import {ConfirmProvider} from "../ConfirmContext.tsx";
 import {userEvent} from "@testing-library/user-event/dist/cjs/setup/index.js";
 import {TASK_PRIORITY, TASK_STATUS, type TaskData} from "../types/types.ts";
@@ -9,11 +9,11 @@ import type {ReactElement} from "react";
 
 const renderWithContext = (ui: ReactElement, value: any) => {
     return render(
-        <FireContext.Provider value={value}>
+        <AuthContext.Provider value={value}>
             <ConfirmProvider>
                 {ui}
             </ConfirmProvider>
-        </FireContext.Provider>
+        </AuthContext.Provider>
     );
 };
 describe("Tasks component", () => {

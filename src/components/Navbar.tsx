@@ -1,13 +1,13 @@
 import {useLocation} from "react-router";
 import {useContext} from "react";
-import {FireContext} from "../FireContext.tsx";
+import {AuthContext} from "../AuthContext.tsx";
 import {BTN_VARIANT} from "../types/types.ts";
 import {useConfirm} from "../ConfirmContext.tsx";
 
 function Navbar() {
     const location = useLocation();
     const confirm = useConfirm();
-    const {logout, user} = useContext(FireContext)
+    const {logout, user} = useContext(AuthContext)
     const handleLogout = () => {
         confirm(
             {
@@ -28,7 +28,7 @@ function Navbar() {
                 {
                     user && <div className="flex items-center justify-between w-md h-10">
                     <p className="text-shadow-lg">{user.displayName}</p>
-                    <img alt="user profile picture" src={user.photoURL!}
+                    <img alt="user profile picture" src={user.photoURL!} referrerPolicy="no-referrer"
                          className="w-15 h-15 text-sm rounded-full shadow-sm shadow-black"/>
                         {
                             location.pathname !== "login" &&
