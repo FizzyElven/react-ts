@@ -56,7 +56,7 @@ function Tasks() {
                 text: "Are you sure you want to delete this task?",
                 confirmText: "Delete",
                 btnVariant: BTN_VARIANT.DANGER,
-                onConfirm: () => deleteTask(taskId),
+                confirmAction: () => deleteTask(taskId),
             }
         )
     }
@@ -76,9 +76,10 @@ function Tasks() {
             const activeTask = {...processedTasks[activeTaskIndex]}
             const arr = processedTasks.filter((t) => t.id !== active.id)
             setTasks([...arr, {...activeTask, customOrder: newOrderValue}])
-            updateTask(active.id.toString(), {...activeTask, customOrder: newOrderValue}).catch(() => {
+            const result = await updateTask(active.id.toString(), {...activeTask, customOrder: newOrderValue})
+            if (result.error){
                 setTasks(processedTasks);
-            });
+            }
         }
     }
 

@@ -29,11 +29,13 @@ export interface TaskStore {
 
     update(userId: string, taskId: string, taskData: Partial<TaskData>): Promise<void>
 }
+
 export interface AuthProvider {
     login(): Promise<User | null>;
     logout(): Promise<void>;
     checkLoggedIn(callback: (user: User | null) => void): Unsubscribe;
 }
+
 export interface TaskData {
     id: string;
     createdAt?: number;
@@ -50,7 +52,7 @@ export interface ConfirmOptions {
     text: string,
     btnVariant: btnVariant,
     confirmText: string,
-    onConfirm: () => Promise<void>
+    confirmAction: () => Promise<Result<any>>
 }
 
 export interface SortArrayConfig<T, K extends keyof T = keyof T> {
@@ -72,10 +74,12 @@ export const FILTERS = {
 } as const;
 export type FilterType = typeof FILTERS[keyof typeof FILTERS];
 
-export type ErrorScope = "get" | "add" | "update" | "move"
+export type ErrorScope = "get" | "add" | "update" | "move" | "delete"
 
 export interface TasksError {
     message: string;
     errorScope: ErrorScope;
     taskId?: string;
 }
+
+export type Result<T> = | { success: true; data: T; error: null } | { success: false; data: null; error: Error };

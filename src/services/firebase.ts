@@ -29,8 +29,8 @@ export class FirestoreTaskStore implements TaskStore {
         );
         if (querySnapshot.empty) return [];
         return querySnapshot.docs.map((snapshot) => ({
-            id: snapshot.id,
             ...snapshot.data(),
+            id: snapshot.id,
         })) as TaskData[];
     }
 
@@ -38,15 +38,8 @@ export class FirestoreTaskStore implements TaskStore {
         await deleteDoc(doc(this.db, USERS_COLLECTION, userId, TASK_COLLECTION, taskId));
     }
 
-    async update(
-        userId: string,
-        taskId: string,
-        taskData: Partial<TaskData>
-    ): Promise<void> {
-        await updateDoc(
-            doc(this.db, USERS_COLLECTION, userId, TASK_COLLECTION, taskId),
-            taskData
-        );
+    async update(userId: string, taskId: string, taskData: Partial<TaskData>): Promise<void> {
+        await updateDoc(doc(this.db, USERS_COLLECTION, userId, TASK_COLLECTION, taskId), taskData);
     }
 }
 
@@ -57,7 +50,7 @@ export class FirebaseAuthProvider implements AuthProvider {
     }
 
     async logout() {
-            await signOut(auth)
+        await signOut(auth)
     }
 
     checkLoggedIn(callback: (user: User | null) => void) {

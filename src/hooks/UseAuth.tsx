@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import {useNavigate} from "react-router";
 import {type User} from "firebase/auth";
 import {AuthService} from "../services/AuthService.ts";
+import type {Result} from "../types/types.ts";
 
 export const useAuth = (authService: AuthService) => {
         const [user, setUser] = useState<User | null>(null);
@@ -20,14 +21,15 @@ export const useAuth = (authService: AuthService) => {
                 console.error(e);
             }
         }
-        const logout = async () => {
+        const logout = async () : Promise<Result<any>> => {
             try {
-                await authService.logout()
+                const data = await authService.logout()
                 setUser(null);
                 navigate("login", {replace: true});
+                return {error: null, data, success: true};
             } catch (e) {
-                if (e instanceof Error)setError(e.message);
                 console.error(e);
+                return {error: e instanceof Error ? e : new Error("something went wrong"), data: null, success: false};
             }
         }
 

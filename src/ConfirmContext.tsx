@@ -4,7 +4,7 @@ import Modal from "./components/Modal.tsx";
 import {ConfirmationDialog} from "./components/ConfirmationDialog.tsx";
 
 interface ConfirmContextType {
-    confirm: (options: ConfirmOptions) => void;
+    confirm: (options: ConfirmOptions) => any;
 }
 
 const ConfirmContext = createContext<ConfirmContextType | null>(null);
@@ -12,7 +12,7 @@ const ConfirmContext = createContext<ConfirmContextType | null>(null);
 export function ConfirmProvider({ children }: { children: ReactNode }) {
     const [config, setConfig] = useState<ConfirmOptions | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<Error | null>(null);
 
     const confirm = (options: ConfirmOptions) => setConfig(options);
     const handleCancel = () => {
@@ -24,15 +24,13 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
 
         setIsLoading(true);
         setError(null);
-
-        try {
-            await config.onConfirm();
-            setConfig(null); // only close on success
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "Something went wrong");
-        } finally {
-            setIsLoading(false);
+        const {error} = await config.confirmAction()
+        if (!error) {
+            setConfig(null)
+        } else {
+            setError(error)
         }
+        setIsLoading(false)
     };
 
     return (

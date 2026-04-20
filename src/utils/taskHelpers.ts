@@ -41,5 +41,8 @@ export function getTaskStatus(task: TaskData) {
     if (task.dueDate && task.status !== TASK_STATUS.OVERDUE && task.dueDate < Date.now()) {
         return {...task, status: TASK_STATUS.OVERDUE}
     }
+    if (task.dueDate && task.status === TASK_STATUS.OVERDUE && task.dueDate > Date.now()) {
+        return {...task, status: TASK_STATUS.ACTIVE}
+    }
     return task;
 }

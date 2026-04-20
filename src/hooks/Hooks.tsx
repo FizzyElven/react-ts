@@ -3,7 +3,7 @@ import {useCallback, useEffect, useMemo, useState} from "react";
 import {
     type FilterConfig,
     FILTERS,
-    type FilterType,
+    type FilterType, type Result,
     type SortArrayConfig,
     TASK_PRIORITY, TASK_STATUS,
     type TaskData, type TasksError
@@ -42,7 +42,7 @@ export const useTasks = ({user, taskService, filtersConfig, search, sortConfig}:
                 setTasks(processedData || []);
             } catch (e) {
                 if (e instanceof Error) setError({message: e.message, errorScope: "get"});
-                console.log(e)
+                console.error(e)
             } finally {
                 setIsLoading(false);
             }
@@ -61,26 +61,40 @@ export const useTasks = ({user, taskService, filtersConfig, search, sortConfig}:
             setIsEditorOpen(false);
         } catch (e) {
             if (e instanceof Error) setError({message: e.message, errorScope: "add"});
-            console.log(e)
+            console.error(e)
         }
     };
-    const deleteTask = async (taskId: string) => {
-        if (!user?.uid) return;
-        setError(null);
-        await taskService.deleteUserTask(user.uid, taskId);
-        await fetchTasks();
-    };
-    const updateTask = async (taskId: string, updatedData: Partial<TaskData>) => {
-        if (!user?.uid) return;
+    const deleteTask = async (taskId: string) : Promise<Result<any>> => {
+        if (!user?.uid) return {error: new Error("user id is not found"), data: null, success: false}
         setError(null);
         try {
-            await taskService.updateUserTask(user.uid, taskId, updatedData);
+            const data = await taskService.deleteUserTask(user.uid, taskId);
+            await fetchTasks();
+            return {data, error: null, success: true}
+        } catch (e) {
+            console.error(e)
+            if (e instanceof Error) {
+                setError({message: e.message, errorScope: "delete"})
+                return {error: e, data: null, success: false}
+            }
+            return {error: new Error("something went wrong"), data: null, success: false}
+        }
+    };
+    const updateTask = async (taskId: string, updatedData: Partial<TaskData>):Promise<Result<any>> => {
+        if (!user?.uid) return {error: new Error("user id is not found"), data: null, success: false}
+        setError(null);
+        try {
+            const data = await taskService.updateUserTask(user.uid, taskId, updatedData);
             await fetchTasks();
             setIsEditorOpen(false);
+            return {data, error: null, success: true}
         } catch (e) {
-            if (e instanceof Error) setError({message: e.message, errorScope: "update", taskId: taskId});
-            console.log(e)
-            throw new Error("failed to update task");
+            console.error(e)
+            if (e instanceof Error) {
+                setError({message: e.message, errorScope: "update", taskId: taskId});
+                return {data: null, error: e, success: false}
+            }
+            return {error: new Error("something went wrong"), data: null, success: false}
         }
     };
 
@@ -99,7 +113,7 @@ export const useTasks = ({user, taskService, filtersConfig, search, sortConfig}:
             await fetchTasks();
         } catch (e) {
             if (e instanceof Error) setError({message: e.message, errorScope: "move", taskId: task.id});
-            console.log(e)
+            console.error(e)
         }
     }
 

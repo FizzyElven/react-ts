@@ -15,7 +15,7 @@ function Navbar() {
                 text: "Are you sure you want to sign out?",
                 confirmText: "Sign Out",
                 btnVariant: BTN_VARIANT.DANGER,
-                onConfirm: () => logout(),
+                confirmAction: () => logout(),
             }
         )
     }

@@ -1,4 +1,4 @@
-import {BTN_VARIANT, TASK_PRIORITY, TASK_STATUS, type TaskData, type TasksError} from "../types/types.ts";
+import {BTN_VARIANT, type Result, TASK_PRIORITY, TASK_STATUS, type TaskData, type TasksError} from "../types/types.ts";
 import Button from "./ui/Button.tsx";
 import InputField from "./ui/InputField.tsx";
 import {useTaskEditor} from "../hooks/Hooks.tsx";
@@ -6,7 +6,7 @@ import {useTaskEditor} from "../hooks/Hooks.tsx";
 interface TaskEditorProps {
     onCancel: () => void;
     onCreate: (task: TaskData) => Promise<void>
-    onEdit: (taskId: string, initialTask: TaskData) => Promise<void>;
+    onEdit: (taskId: string, initialTask: TaskData) => Promise<Result<any>>;
     error: TasksError | null;
     initialTask?: TaskData;
 }
@@ -70,14 +70,14 @@ function TaskEditor({onCancel, onCreate, onEdit, initialTask, error}: TaskEditor
                       <label htmlFor="deadline-time">Complete before:</label>
                       <input defaultValue={new Date(editedTask.dueDate).toISOString().slice(0, 16)} id="deadline-time"
                              type="datetime-local"
-                             onBlur={(event) => updateField("dueDate", new Date(event.target.value).getTime() / 1000)}/>
+                             onBlur={(event) => updateField("dueDate", new Date(event.target.value).getTime() )}/>
                       </>}
                 </div>
             </form>
             {(error && error.errorScope === "update") && <p className="text-red-500 text-md">Failed to update task: {error.message}</p>}
             {(error && error.errorScope === "add") && <p className="text-red-500 text-md">Failed to create new task: {error.message}</p>}
             <div className="flex justify-between items-center w-sm">
-                <Button btnVariant={BTN_VARIANT.PRIMARY} onClick={()=> initialTask ? onEdit(initialTask.id!, editedTask) : onCreate(editedTask)}>
+                <Button btnVariant={BTN_VARIANT.PRIMARY} onClick={()=> initialTask ? onEdit(initialTask.id, editedTask) : onCreate(editedTask)}>
                     Submit
                 </Button>
                 <Button btnVariant={BTN_VARIANT.DANGER} onClick={onCancel}>
