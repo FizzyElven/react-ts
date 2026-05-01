@@ -96,7 +96,7 @@ function Tasks() {
                             placeholder="Search Tasks">🔍</InputField>
             </Sorting>
             {(isLoading && !processedTasks) &&
-              <div className="w-2xl h-96 flex justify-center items-center">Loading...</div>}
+              <div className="w-2xl h-96 flex justify-center items-center text-gray-700 dark:text-gray-200">Loading...</div>}
             {(error && error.errorScope === "get") && <p className="text-red-500 text-2xl">failed to get tasks: {error.message}</p>}
             {processedTasks && processedTasks.length > 0 ?
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(e) => handleDragEnd(e)}>
@@ -112,7 +112,7 @@ function Tasks() {
                         </div>
                     </SortableContext>
                 </DndContext> :
-                <div className="mt-36 flex flex-col items-center text-2xl">You currently have no tasks</div>}
+                <div className="mt-36 flex flex-col items-center text-2xl text-gray-700 dark:text-gray-200">You currently have no tasks</div>}
             {isEditorOpen && <Modal isOpen={isEditorOpen} onClose={() => setIsEditorOpen(false)}>
               <TaskEditor onCreate={addTask} onEdit={updateTask} error={error}
                           onCancel={() => setIsEditorOpen(false)} initialTask={editTask}/>

@@ -20,10 +20,10 @@ function Sorting({sortConfig, setSortConfig, children}: {
         <div className="flex items-center gap-2.5">
             {children}
             <div className="group shadow-lg transition shadow-gray-200 hover:border-blue-400
-                    focus-within:border-blue-300 focus-within:shadow-lg border-2 border-blue-600 rounded-full px-2 text-2xl p-2.5 flex gap-2.5">
+                    focus-within:border-blue-300 focus-within:shadow-lg border-2 border-blue-600 rounded-full px-2 text-2xl p-2.5 flex gap-2.5 dark:bg-gray-900 dark:shadow-gray-950 dark:border-blue-400">
                 <label className="sr-only" htmlFor="task-sort-select">Select how to sort tasks</label>
                 <select id="task-sort-select"
-                    className="outline-none"
+                    className="outline-none dark:bg-gray-900"
                     name="sorting tasks" value={sortConfig.key}
                     onChange={handleSorting}>
                     <option value="title">Title</option>
@@ -34,8 +34,8 @@ function Sorting({sortConfig, setSortConfig, children}: {
                 </select>
             </div>
             <button aria-label={`Sort ${sortConfig.direction === "asc" ? "descending" : "ascending"}`}
-                className="cursor-pointer font-bold border border-blue-500 transition shadow-lg shadow-gray-200 hover:border-blue-400 hover:border-2 w-10 h-10
-                    focus-within:border-blue-300 focus-within:shadow-lg rounded-full px-2 text-2xl p-2.5 flex gap-2.5"
+                className="cursor-pointer bg-white font-bold border border-blue-500 transition shadow-lg shadow-gray-200 hover:border-blue-400 hover:border-2 w-10 h-10
+                    focus-within:border-blue-300 focus-within:shadow-lg rounded-full px-2 text-2xl p-2.5 flex gap-2.5 dark:bg-gray-900 dark:border-blue-400 dark:shadow-gray-950 dark:hover:bg-gray-800"
                 onClick={() => setSortConfig((prevState: { direction: string; }) => {
                     return {
                         ...prevState,

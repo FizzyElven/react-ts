@@ -70,6 +70,7 @@ function TaskEditor({onCancel, onCreate, onEdit, initialTask, error}: TaskEditor
                       <label htmlFor="deadline-time">Complete before:</label>
                       <input defaultValue={new Date(editedTask.dueDate).toISOString().slice(0, 16)} id="deadline-time"
                              type="datetime-local"
+                             className="rounded-md border border-gray-400 bg-white p-2 dark:border-gray-600 dark:bg-gray-900"
                              onBlur={(event) => updateField("dueDate", new Date(event.target.value).getTime() )}/>
                       </>}
                 </div>

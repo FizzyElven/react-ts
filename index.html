@@ -1,12 +1,31 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <script>
+        (function () {
+            try {
+                const storageValue = localStorage.getItem('theme-storage');
+                if (storageValue) {
+                    const data = JSON.parse(storageValue);
+                    if (data.state && data.state.isDark) {
+                        document.documentElement.classList.add('dark');
+                    }
+                } else {
+                    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                        document.documentElement.classList.add('dark');
+                    }
+                }
+            } catch (e) {
+                console.error("Theme initialization failed", e);
+            }
+        })();
+    </script>
     <title>Task Manager</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+</head>
+<body>
+<div id="root"></div>
+<script type="module" src="/src/main.tsx"></script>
+</body>
 </html>

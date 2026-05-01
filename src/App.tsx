@@ -28,7 +28,7 @@ function App() {
     const {loading, user, login, logout, error} = useAuth(authService)
     if (loading) return <Loader/>
     return (
-        <div className="flex flex-col">
+        <div className="min-h-screen flex flex-col bg-white text-gray-950 transition-colors dark:bg-gray-950 dark:text-gray-50">
             <AuthContext.Provider value={{user, login, logout, error, taskService}}>
                 <ConfirmProvider>
                     <Navbar/>

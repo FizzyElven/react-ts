@@ -48,7 +48,7 @@ function Filters({setFiltersConfig, filtersConfig, addFilter, removeFilter}: Pro
                                 aria-label={`Filter ${filter.filterCategory}`}
                                 aria-haspopup="true"
                                 aria-expanded={true}
-                                className="relative h-10 flex transition justify-center items-center rounded-full border border-blue-500 shadow-lg px-5 text-2xl hover:bg-gray-50 focus:ring-2 focus:ring-blue-300 outline-none"
+                                className="relative h-10 flex transition justify-center items-center rounded-full border border-blue-500 bg-white shadow-lg px-5 text-2xl hover:bg-gray-50 focus:ring-2 focus:ring-blue-300 outline-none dark:bg-gray-900 dark:border-blue-400 dark:shadow-gray-950 dark:hover:bg-gray-800"
                                 onClick={() => setDropDownOpen(dropDownOpen === filter.filterCategory ? null : filter.filterCategory)}
                                 onMouseEnter={() => setDropDownOpen(filter.filterCategory)}
                             >
@@ -62,7 +62,7 @@ function Filters({setFiltersConfig, filtersConfig, addFilter, removeFilter}: Pro
                                     className="absolute z-50 p-3"
                                     onMouseLeave={() => setDropDownOpen(null)}
                                 >
-                                    <ul className="bg-white border border-blue-500 shadow-2xl p-2.5 rounded-lg w-40 text-2xl flex flex-col gap-2.5 list-none">
+                                    <ul className="bg-white border border-blue-500 shadow-2xl p-2.5 rounded-lg w-40 text-2xl flex flex-col gap-2.5 list-none dark:bg-gray-900 dark:border-blue-400">
                                         {filter.options.map(option => {
                                             const uniqueId = `${filter.filterCategory}-${option}`;
                                             return (
@@ -94,13 +94,13 @@ function Filters({setFiltersConfig, filtersConfig, addFilter, removeFilter}: Pro
                     return (
                         <button key={filter.value} aria-label={`remove filter ${filter.field}: ${filter.value}`}
                                 onClick={() => removeFilter(filter.field as keyof TaskData, filter.value)}
-                                className="leading-none rounded-full p-2.5 flex gap-2 items-center border border-blue-500 shadow-lg shadow-gray-200">
+                                className="leading-none rounded-full p-2.5 flex gap-2 items-center border border-blue-500 bg-white shadow-lg shadow-gray-200 dark:bg-gray-900 dark:border-blue-400 dark:shadow-gray-950">
                             {`${filter.field}: ${filter.value} ×`}
                         </button>
                     )
                 })}
               <button
-                className="text-xl h-10 flex justify-center items-center rounded-full border border-blue-500 shadow-lg shadow-gray-200 hover:border-blue-600 hover:shadow-lg hover:bg-gray-50 px-5"
+                className="text-xl h-10 flex justify-center items-center rounded-full border border-blue-500 bg-white shadow-lg shadow-gray-200 hover:border-blue-600 hover:shadow-lg hover:bg-gray-50 px-5 dark:bg-gray-900 dark:border-blue-400 dark:shadow-gray-950 dark:hover:bg-gray-800"
                 onClick={() => setFiltersConfig([])}>
                 Clear Filters
               </button>

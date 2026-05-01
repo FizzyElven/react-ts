@@ -33,7 +33,7 @@ export function getPriorityBar(priority: taskPriority) {
         case TASK_PRIORITY.MEDIUM:
             return "left-11"
         case TASK_PRIORITY.HIGH:
-            return "right-1.5"
+            return "right-3.5"
     }
 }
 

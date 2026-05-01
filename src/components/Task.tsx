@@ -35,7 +35,7 @@ const Task = ({task, tasks, onChangeStatus, onDelete, onEdit, onMove, canManuall
 
     return (
         <article aria-label={task.title} role="listitem" id={task.id} ref={setNodeRef} style={style}
-                 className={"relative shadow-lg shadow-gray-200 flex items-start flex-col gap-2.5 border text-2xl p-2.5 rounded-3xl" + ` ${getBorderColor(task.status)}`}>
+                 className={"relative bg-white shadow-lg shadow-gray-200 flex items-start flex-col gap-2.5 border text-2xl p-2.5 rounded-3xl dark:bg-gray-900 dark:shadow-gray-950" + ` ${getBorderColor(task.status)}`}>
             <div className="w-full">
                 <div className="flex items-center justify-between w-full">
                     <h3 className="font-bold">{task.title}</h3>
@@ -47,12 +47,12 @@ const Task = ({task, tasks, onChangeStatus, onDelete, onEdit, onMove, canManuall
                 </div>
                 <div className="flex items-center justify-between w-full">
                     <p className="text-sm">Created: {task.createdAt ? new Date(task.createdAt).toLocaleString() : "-"}</p>
-                    <div className="priority-bar relative text-sm flex items-center justify-center leading-none"
+                    <div className="priority-bar relative text-black text-sm flex items-center justify-center leading-none"
                          title={`This task priority is ${task.priority}`}>
                         {task.priority}
                         <div role="graphics-symbol"
                              aria-label={`Priority: ${task.priority}`}
-                             className={"triangle-pointer absolute top-4" + ` ${getPriorityBar(task.priority)}`}>
+                             className={"w-0.5 h-6 bg-gray-700 dark:bg-gray-200 absolute shadow dark:shadow-black" + ` ${getPriorityBar(task.priority)}`}>
                         </div>
                     </div>
                 </div>
@@ -68,12 +68,12 @@ const Task = ({task, tasks, onChangeStatus, onDelete, onEdit, onMove, canManuall
                       <div className="flex gap-2.5">
                         <button aria-label={`Move ${task.title} up`} disabled={!canManuallySort}
                                 onClick={() => onMove(task, "up")}
-                                className="flex items-center justify-center hover:border-blue-400 focus-within:border-blue-300 transition hover:bg-gray-50 shadow-lg shadow-gray-200 border-2 text-2xl border-blue-600 px-2.5 rounded-full w-10 h-10 cursor-pointer">
+                                className="flex items-center justify-center bg-white hover:border-blue-400 focus-within:border-blue-300 transition hover:bg-gray-50 shadow-lg shadow-gray-200 border-2 text-2xl border-blue-600 px-2.5 rounded-full w-10 h-10 cursor-pointer dark:bg-gray-900 dark:shadow-gray-950 dark:border-blue-400 dark:hover:bg-gray-800">
                           ↑
                         </button>
                         <button aria-label={`Move ${task.title} down`} disabled={!canManuallySort}
                                 onClick={() => onMove(task, "down")}
-                                className="flex items-center justify-center hover:border-blue-400 focus-within:border-blue-300 transition hover:bg-gray-50 shadow-lg shadow-gray-200 border-2 text-2xl border-blue-600 px-2.5 rounded-full w-10 h-10 cursor-pointer">
+                                className="flex items-center justify-center bg-white hover:border-blue-400 focus-within:border-blue-300 transition hover:bg-gray-50 shadow-lg shadow-gray-200 border-2 text-2xl border-blue-600 px-2.5 rounded-full w-10 h-10 cursor-pointer dark:bg-gray-900 dark:shadow-gray-950 dark:border-blue-400 dark:hover:bg-gray-800">
                           ↓
                         </button>
                       </div>
